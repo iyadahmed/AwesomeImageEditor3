@@ -2,7 +2,7 @@ import os
 
 from PyQt6.QtCore import QStandardPaths
 from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import QFileDialog, QMainWindow
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from awesome_image_editor.canvas import CanvasWidget, ImageLayer
 
@@ -25,10 +25,20 @@ class MainWindow(QMainWindow):
         fileNames, selectedFilter = QFileDialog.getOpenFileNames(
             self, "Import images", directory, "Image files (*.jpg *.png *.jpeg)"
         )
+        failedFileNames = []
         for fileName in fileNames:
             image = QImage(fileName)
-            assert not image.isNull()
+            if image.isNull():
+                failedFileNames.append(fileName)
+                continue
             self.canvasWidget.layers.append(ImageLayer(image))
+
+        if len(failedFileNames) > 0:
+            QMessageBox.warning(
+                self,
+                "Failed to load images",
+                "Some images failed to load:\n" + "\n".join(failedFileNames),
+            )
 
     def createMenus(self):
         fileMenu = self.menuBar().addMenu("&File")
