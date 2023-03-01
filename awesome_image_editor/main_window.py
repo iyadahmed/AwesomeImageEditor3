@@ -1,3 +1,6 @@
+import os
+
+from PyQt6.QtCore import QStandardPaths
 from PyQt6.QtGui import QImage
 from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
@@ -13,8 +16,14 @@ class MainWindow(QMainWindow):
         self.createMenus()
 
     def importImages(self):
+        pictureLocations = QStandardPaths.standardLocations(QStandardPaths.StandardLocation.PicturesLocation)
+        if len(pictureLocations) == 0:
+            directory = os.path.expanduser("~")
+        else:
+            directory = pictureLocations[0]
+
         fileNames, selectedFilter = QFileDialog.getOpenFileNames(
-            self, "Import images", "C:\\", "Image files (*.jpg *.png *.jpeg)"
+            self, "Import images", directory, "Image files (*.jpg *.png *.jpeg)"
         )
         for fileName in fileNames:
             image = QImage(fileName)
