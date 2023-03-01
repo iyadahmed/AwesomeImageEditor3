@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtGui import QPainter, QPaintEvent, QImage
-
 from abc import ABC, abstractmethod
+
+from PyQt6.QtGui import QImage, QPainter, QPaintEvent
+from PyQt6.QtWidgets import QWidget
 
 
 class Layer(ABC):

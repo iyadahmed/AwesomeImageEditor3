@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QMainWindow, QFileDialog
 from PyQt6.QtGui import QImage
+from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
 from awesome_image_editor.canvas import CanvasWidget, ImageLayer
 
