@@ -3,7 +3,7 @@ from operator import add, sub
 
 from PyQt6.QtCore import QPoint, Qt
 from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
 
 class Layer(ABC):
@@ -20,7 +20,7 @@ class ImageLayer(Layer):
         painter.drawImage(self.image.rect(), self.image)
 
 
-class CanvasWidget(QWidget):
+class CanvasWidget(QOpenGLWidget):
     def __init__(self):
         super().__init__()
         self.layers: list[Layer] = []
@@ -36,6 +36,7 @@ class CanvasWidget(QWidget):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
+        painter.fillRect(event.rect(), self.palette().window())
         painter.save()
         painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
         for layer in self.layers:
