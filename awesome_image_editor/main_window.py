@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
             directory = pictureLocations[0]
 
         fileNames, selectedFilter = QFileDialog.getOpenFileNames(
-            self, "Import images", directory, "Image files (*.jpg *.png *.jpeg)"
+            self, "Import Image/s", directory, "Image Files (*.jpg *.png *.jpeg)"
         )
         failedFileNames = []
         for fileName in fileNames:
@@ -42,4 +42,4 @@ class MainWindow(QMainWindow):
 
     def createMenus(self):
         fileMenu = self.menuBar().addMenu("&File")
-        fileMenu.addAction("Import Image", self.importImages)
+        fileMenu.addAction("Import Image/s", self.importImages)
