@@ -33,19 +33,11 @@ class CanvasWidget(QWidget):
         self._isSpaceBarHeld = False
         self._panStartPos = QPoint()
         self._panDelta = QPoint()
-        self._viewportTranslation = QPoint()
-
-        # Zooming
-        # TODO: use matrices to zoom around a point
-        #       both panning and zooming would modify
-        #       the matrix
-        self._viewportScale = 1
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.save()
-        painter.translate(add(self._viewportTranslation, self._panDelta))
-        painter.scale(self._viewportScale, self._viewportScale)
+        painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
         for layer in self.layers:
             painter.save()
             layer.draw(painter)
@@ -71,7 +63,7 @@ class CanvasWidget(QWidget):
 
     def panEnd(self):
         self.setCursor(Qt.CursorShape.ArrowCursor)
-        self._viewportTranslation += self._panDelta
+        self._transform *= QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
         self._panDelta = QPoint()
         self.update()
         self._isPanning = False
@@ -95,6 +87,14 @@ class CanvasWidget(QWidget):
             scale = 1.1
             if event.angleDelta().x() < 0:
                 scale = 0.9
-            self._viewportScale *= scale
+
+            zoomingPoint = event.position()
+            deltaTransform = QTransform()
+            deltaTransform.translate(zoomingPoint.x(), zoomingPoint.y())
+            deltaTransform.scale(scale, scale)
+            deltaTransform.translate(-zoomingPoint.x(), -zoomingPoint.y())
+
+            self._transform *= deltaTransform
+
             self.update()
             event.accept()
