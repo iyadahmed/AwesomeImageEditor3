@@ -1,6 +1,9 @@
+import ctypes
+import platform
 import sys
+from pathlib import PurePath
 
-from PyQt6.QtGui import QColor, QPalette
+from PyQt6.QtGui import QColor, QIcon, QPalette
 from PyQt6.QtWidgets import QApplication
 
 from awesome_image_editor.main_window import MainWindow
@@ -10,6 +13,13 @@ app = QApplication(sys.argv)
 app.setOrganizationName("SideProject")
 app.setOrganizationDomain("side-project.com")
 app.setApplicationName("Awesome Image Editor")
+
+# Fixes app icon not displayed in Windows taskbar
+if platform.system() == "Windows":
+    appid = "sideproject.AwesomeImageEditor"
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)  # type: ignore
+
+app.setWindowIcon(QIcon((PurePath(__file__).parent / "icons" / "app2.svg").as_posix()))
 
 # Dark theme + modifications by @alezzacreative (Twitter, GitHub)
 # https://stackoverflow.com/a/56851493/8094047
