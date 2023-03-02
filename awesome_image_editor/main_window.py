@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
                 failedFileNames.append(fileName)
                 continue
             self.canvasWidget.layers.append(ImageLayer(image))
+
         self.canvasWidget.update()
 
         if len(failedFileNames) > 0:
