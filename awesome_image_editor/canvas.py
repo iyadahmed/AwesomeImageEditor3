@@ -35,7 +35,8 @@ class CanvasWidget(QOpenGLWidget):
         self._panDelta = QPoint()
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        painter = QPainter(self)
+        painter = QPainter()
+        painter.begin(self)
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
         painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
@@ -44,6 +45,7 @@ class CanvasWidget(QOpenGLWidget):
             layer.draw(painter)
             painter.restore()
         painter.restore()
+        painter.end()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Space:
