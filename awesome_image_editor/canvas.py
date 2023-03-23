@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from operator import add, sub
 
-from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtCore import QPoint, QSize, Qt
 from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
@@ -9,6 +9,10 @@ from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 class Layer(ABC):
     @abstractmethod
     def draw(self, painter: QPainter):
+        pass
+
+    @abstractmethod
+    def size(self) -> QSize:
         pass
 
 
@@ -19,6 +23,9 @@ class ImageLayer(Layer):
     def draw(self, painter: QPainter):
         painter.drawImage(self.image.rect(), self.image)
 
+    def size(self):
+        return self.image.size()
+
 
 class CanvasWidget(QOpenGLWidget):
     def __init__(self):
@@ -26,6 +33,7 @@ class CanvasWidget(QOpenGLWidget):
         self.layers: list[Layer] = []
 
         self._transform = QTransform()
+        self._transform2 = QTransform()
 
         # Panning
         self.grabKeyboard()
@@ -39,13 +47,40 @@ class CanvasWidget(QOpenGLWidget):
         painter.begin(self)
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
-        painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
+        painter.setTransform(
+            self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
+        )
         for layer in self.layers:
             painter.save()
             layer.draw(painter)
             painter.restore()
         painter.restore()
         painter.end()
+
+    def calcAllLayersSize(self):
+        size = QSize()
+
+        for l in self.layers:
+            size = size.expandedTo(l.size())
+
+        return size
+
+    def fitView(self):
+        size = self.calcAllLayersSize()
+        if size.width() == 0:
+            # Avoid division by zero
+            return
+
+        scaled_size = size.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        scale = scaled_size.width() / size.width()
+
+        self._transform2 = QTransform()
+        self._transform2.translate(
+            self.size().width() / 2 - scaled_size.width() / 2, self.size().height() / 2 - scaled_size.height() / 2
+        )
+        self._transform2.scale(scale, scale)
+
+        self.update()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Space:

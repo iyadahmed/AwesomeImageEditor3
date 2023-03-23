@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
             self.canvasWidget.layers.append(ImageLayer(image))
 
         self.canvasWidget.update()
+        self.canvasWidget.fitView()
 
         if len(failedFileNames) > 0:
             QMessageBox.warning(
