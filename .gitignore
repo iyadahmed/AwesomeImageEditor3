@@ -1,4 +1,6 @@
 /.vscode/
+/.idea/
 /env/
 __pycache__/
+/.mypy_cache
 *.prof
