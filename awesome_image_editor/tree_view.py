@@ -1,9 +1,7 @@
-from abc import ABC, abstractmethod
-from operator import add, sub
 from pathlib import Path
 
-from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, QSizeF, Qt, pyqtSignal
-from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
+from PyQt6.QtCore import QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QPixmap
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtSvg import QSvgRenderer
 
