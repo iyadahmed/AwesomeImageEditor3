@@ -2,8 +2,8 @@ from pathlib import Path
 
 from PyQt6.QtCore import QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QPixmap
-from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.layers import Layer
 
@@ -27,7 +27,7 @@ ICON_HIDE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hide.svg"
 ICON_SHOW_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/show.svg", THUMBNAIL_SIZE)
 
 
-class LayersTreeView(QOpenGLWidget):
+class LayersTreeView(QWidget):
     layerVisibilityChanged = pyqtSignal()
 
     def __init__(self, layers: list[Layer]):

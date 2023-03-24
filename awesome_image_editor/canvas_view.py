@@ -2,12 +2,12 @@ from operator import sub
 
 from PyQt6.QtCore import QPoint, QSize, Qt
 from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
-from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.layers import Layer
 
 
-class LayersCanvasView(QOpenGLWidget):
+class LayersCanvasView(QWidget):
     def __init__(self, layers: list[Layer]):
         super().__init__()
         self.layers = layers
