@@ -8,7 +8,6 @@ from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtSvg import QSvgRenderer
 
 from awesome_image_editor.layers import Layer
-from awesome_image_editor.utils import calcScaleFitSize1ToSize2
 
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 16
