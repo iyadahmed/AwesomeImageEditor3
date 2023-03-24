@@ -13,6 +13,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setStyleSheet(r"""
+            QMainWindow::separator {background: palette(window);}
+            QMainWindow::separator:hover {background: palette(highlight)}
+        """)
+
         self.layers: list[Layer] = []
 
         self.canvasWidget = LayersCanvasView(self.layers)
