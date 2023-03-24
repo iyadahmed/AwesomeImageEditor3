@@ -25,6 +25,9 @@ class LayersCanvasView(QWidget):
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
+
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+
         painter.fillRect(event.rect(), self.palette().base())
         painter.save()
         painter.setTransform(
