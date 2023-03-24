@@ -10,7 +10,7 @@ from PyQt6.QtSvg import QSvgRenderer
 from awesome_image_editor.layers import Layer
 
 THUMBNAIL_SIZE = QSize(64, 64)
-EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 16
+EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 10
 
 
