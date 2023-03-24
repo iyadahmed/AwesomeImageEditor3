@@ -1,14 +1,14 @@
+from abc import ABC, abstractmethod
+
 from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QImage, QPainter
-
-
-from abc import ABC, abstractmethod
 
 
 class Layer(ABC):
     def __init__(self):
         super().__init__()
         self.isHidden = False
+        self.isSelected = False
 
     @abstractmethod
     def draw(self, painter: QPainter):

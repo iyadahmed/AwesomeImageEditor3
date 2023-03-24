@@ -6,11 +6,8 @@ from pathlib import PurePath
 from PyQt6.QtGui import QColor, QIcon, QPalette
 from PyQt6.QtWidgets import QApplication
 
-# NOTE: Application is created before importing MainWindow to ensure QApplication is created before loading any pixmaps or so
 app = QApplication(sys.argv)
 
-
-from awesome_image_editor.main_window import MainWindow
 
 app.setOrganizationName("SideProject")
 app.setOrganizationDomain("side-project.com")
@@ -41,6 +38,10 @@ palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
 palette.setColor(QPalette.ColorRole.Highlight, QColor(56, 20, 35))
 palette.setColor(QPalette.ColorRole.HighlightedText, QColor(167, 0, 72))
 app.setPalette(palette)
+
+# NOTE: Application is created and pallete is setup before importing MainWindow to ensure QApplication is created before loading any pixmaps or accessing any pallete colors
+
+from awesome_image_editor.main_window import MainWindow
 
 mainWindow = MainWindow()
 mainWindow.showMaximized()
