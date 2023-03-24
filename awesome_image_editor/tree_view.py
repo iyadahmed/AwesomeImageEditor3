@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from operator import add, sub
 from pathlib import Path
 
-from PyQt6.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSignal
 from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtSvg import QSvgRenderer
 
 from awesome_image_editor.layers import Layer
+from awesome_image_editor.utils import calcScaleFitSize1ToSize2
 
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 16
@@ -57,7 +58,6 @@ class LayersTreeView(QOpenGLWidget):
         y = 0
 
         for layer in self.layers[::-1]:
-            painter.save()
 
             icon_show_hide_bounds = QRectF(
                 MARGIN,
@@ -68,10 +68,30 @@ class LayersTreeView(QOpenGLWidget):
             # Display hide or show icon based on hide state of layer
             (ICON_HIDE_RENDERER if layer.isHidden else ICON_SHOW_RENDERER).render(painter, icon_show_hide_bounds)
 
-            # TODO: transform to fit layer in thumbnail box
-            # layer.draw(painter)
+            layerSize = layer.size()
+
+            if layerSize.width() > 0:
+                thumbnailRect = QRectF(
+                    MARGIN + EYE_ICON_WIDTH + MARGIN,
+                    y,
+                    THUMBNAIL_SIZE.width(),
+                    THUMBNAIL_SIZE.height(),
+                )
+
+                scaledSize = layerSize.scaled(THUMBNAIL_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
+
+                painter.save()
+                painter.translate(
+                    thumbnailRect.center().x() - scaledSize.width() / 2,
+                    thumbnailRect.center().y() - scaledSize.height() / 2,
+                )
+                scale = scaledSize.width() / layerSize.width()
+                painter.scale(scale, scale)
+                layer.draw(painter)
+                painter.restore()
+
+            # TODO: draw thumbnail frame over thumbnail
             # TODO: draw layer name
-            painter.restore()
 
             y += THUMBNAIL_SIZE.width()
 
