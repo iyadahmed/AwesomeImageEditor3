@@ -60,7 +60,6 @@ class LayersTreeView(QWidget):
         painter.begin(self)
 
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
 
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
