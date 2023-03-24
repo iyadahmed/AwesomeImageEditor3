@@ -71,7 +71,6 @@ class LayersTreeView(QOpenGLWidget):
         y = 0
 
         for layer in self.layers[::-1]:
-
             eyeIconRect = QRect(
                 MARGIN,
                 y + THUMBNAIL_SIZE.width() // 2 - EYE_ICON_WIDTH // 2,
