@@ -1,17 +1,31 @@
 import os
 
-from PyQt6.QtCore import QStandardPaths
+from PyQt6.QtCore import QStandardPaths, Qt
 from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox
 
-from awesome_image_editor.canvas import CanvasWidget, ImageLayer
+from awesome_image_editor.canvas_view import LayersCanvasView
+from awesome_image_editor.layers import ImageLayer, Layer
+from awesome_image_editor.tree_view import LayersTreeView
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.canvasWidget = CanvasWidget()
+
+        self.layers: list[Layer] = []
+
+        self.canvasWidget = LayersCanvasView(self.layers)
         self.setCentralWidget(self.canvasWidget)
+
+        leftDock = QDockWidget("Layers", self)
+        leftDock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
+        self.treeWidget = LayersTreeView(self.layers)
+        leftDock.setWidget(self.treeWidget)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, leftDock)
+        self.resizeDocks([leftDock], [self.size().width() // 2], Qt.Orientation.Horizontal)
+
+        self.treeWidget.layerVisibilityChanged.connect(self.canvasWidget.update)
 
         self.createMenus()
 
@@ -31,8 +45,9 @@ class MainWindow(QMainWindow):
             if image.isNull():
                 failedFileNames.append(fileName)
                 continue
-            self.canvasWidget.layers.append(ImageLayer(image))
+            self.layers.append(ImageLayer(image))
 
+        self.treeWidget.update()
         self.canvasWidget.update()
         self.canvasWidget.fitView()
 

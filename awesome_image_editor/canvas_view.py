@@ -1,36 +1,16 @@
-from abc import ABC, abstractmethod
-from operator import add, sub
+from operator import sub
 
 from PyQt6.QtCore import QPoint, QSize, Qt
-from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
+from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
-
-class Layer(ABC):
-    @abstractmethod
-    def draw(self, painter: QPainter):
-        pass
-
-    @abstractmethod
-    def size(self) -> QSize:
-        pass
+from awesome_image_editor.layers import Layer
 
 
-class ImageLayer(Layer):
-    def __init__(self, image: QImage):
-        self.image = image
-
-    def draw(self, painter: QPainter):
-        painter.drawImage(self.image.rect(), self.image)
-
-    def size(self):
-        return self.image.size()
-
-
-class CanvasWidget(QOpenGLWidget):
-    def __init__(self):
+class LayersCanvasView(QOpenGLWidget):
+    def __init__(self, layers: list[Layer]):
         super().__init__()
-        self.layers: list[Layer] = []
+        self.layers = layers
 
         self._transform = QTransform()
         self._transform2 = QTransform()
@@ -51,6 +31,8 @@ class CanvasWidget(QOpenGLWidget):
             self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
         )
         for layer in self.layers:
+            if layer.isHidden:
+                continue
             painter.save()
             layer.draw(painter)
             painter.restore()
