@@ -23,8 +23,8 @@ def pixmapFromSVG(filepath: Path, size: QSize):
     return pixmap
 
 
-ICON_HIDE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hide.svg", THUMBNAIL_SIZE)
-ICON_SHOW_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/show.svg", THUMBNAIL_SIZE)
+ICON_HIDDEN_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hidden.svg", THUMBNAIL_SIZE)
+ICON_VISIBLE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/visible.svg", THUMBNAIL_SIZE)
 
 
 class LayersTreeView(QWidget):
@@ -76,7 +76,7 @@ class LayersTreeView(QWidget):
                 EYE_ICON_HEIGHT,
             )
             # Display hide or show icon based on hide state of layer
-            painter.drawPixmap(eyeIconRect, ICON_HIDE_PIXMAP if layer.isHidden else ICON_SHOW_PIXMAP)
+            painter.drawPixmap(eyeIconRect, ICON_HIDDEN_PIXMAP if layer.isHidden else ICON_VISIBLE_PIXMAP)
 
             layerSize = layer.size()
 
