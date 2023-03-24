@@ -42,13 +42,13 @@ class LayersTreeView(QOpenGLWidget):
 
         for layer in self.layers[::-1]:
             if y < event.pos().y() < (y + THUMBNAIL_SIZE.width()):
-                icon_show_hide_bounds = QRectF(
+                eyeIconRect = QRectF(
                     MARGIN,
                     y + THUMBNAIL_SIZE.width() / 2 - EYE_ICON_WIDTH / 2,
                     EYE_ICON_WIDTH,
                     EYE_ICON_HEIGHT,
                 )
-                if icon_show_hide_bounds.contains(event.position()):
+                if eyeIconRect.contains(event.position()):
                     # Toggle hidden state
                     layer.isHidden = not layer.isHidden
                     self.layerVisibilityChanged.emit()
@@ -72,14 +72,14 @@ class LayersTreeView(QOpenGLWidget):
 
         for layer in self.layers[::-1]:
 
-            icon_show_hide_bounds = QRect(
+            eyeIconRect = QRect(
                 MARGIN,
                 y + THUMBNAIL_SIZE.width() // 2 - EYE_ICON_WIDTH // 2,
                 EYE_ICON_WIDTH,
                 EYE_ICON_HEIGHT,
             )
             # Display hide or show icon based on hide state of layer
-            painter.drawPixmap(icon_show_hide_bounds, ICON_HIDE_PIXMAP if layer.isHidden else ICON_SHOW_PIXMAP)
+            painter.drawPixmap(eyeIconRect, ICON_HIDE_PIXMAP if layer.isHidden else ICON_SHOW_PIXMAP)
 
             layerSize = layer.size()
 

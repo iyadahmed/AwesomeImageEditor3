@@ -53,12 +53,12 @@ class LayersCanvasView(QOpenGLWidget):
             # Avoid division by zero
             return
 
-        scaled_size = size.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
-        scale = scaled_size.width() / size.width()
+        scaledSize = size.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        scale = scaledSize.width() / size.width()
 
         self._transform2 = QTransform()
         self._transform2.translate(
-            self.size().width() / 2 - scaled_size.width() / 2, self.size().height() / 2 - scaled_size.height() / 2
+            self.size().width() / 2 - scaledSize.width() / 2, self.size().height() / 2 - scaledSize.height() / 2
         )
         self._transform2.scale(scale, scale)
 
