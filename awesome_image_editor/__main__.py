@@ -6,9 +6,11 @@ from pathlib import PurePath
 from PyQt6.QtGui import QColor, QIcon, QPalette
 from PyQt6.QtWidgets import QApplication
 
-from awesome_image_editor.main_window import MainWindow
-
+# NOTE: Application is created before importing MainWindow to ensure QApplication is created before loading any pixmaps or so
 app = QApplication(sys.argv)
+
+
+from awesome_image_editor.main_window import MainWindow
 
 app.setOrganizationName("SideProject")
 app.setOrganizationDomain("side-project.com")

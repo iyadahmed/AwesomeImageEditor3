@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from operator import add, sub
 from pathlib import Path
 
-from PyQt6.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSignal
-from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
+from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, QSizeF, Qt, pyqtSignal
+from PyQt6.QtGui import QImage, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtSvg import QSvgRenderer
 
@@ -13,8 +13,20 @@ THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 16
 MARGIN = 10
 
-ICON_HIDE_RENDERER = QSvgRenderer((Path(__file__).parent / "icons/layers/hide.svg").as_posix())
-ICON_SHOW_RENDERER = QSvgRenderer((Path(__file__).parent / "icons/layers/show.svg").as_posix())
+
+def pixmapFromSVG(filepath: Path, size: QSize):
+    pixmap = QPixmap(size)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    renderer = QSvgRenderer(filepath.as_posix())
+    painter = QPainter()
+    painter.begin(pixmap)
+    renderer.render(painter, QRectF(QPointF(0, 0), size.toSizeF()))
+    painter.end()
+    return pixmap
+
+
+ICON_HIDE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hide.svg", THUMBNAIL_SIZE)
+ICON_SHOW_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/show.svg", THUMBNAIL_SIZE)
 
 
 class LayersTreeView(QOpenGLWidget):
@@ -47,9 +59,11 @@ class LayersTreeView(QOpenGLWidget):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
-        # painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-
         painter.begin(self)
+
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
+
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
 
@@ -58,14 +72,14 @@ class LayersTreeView(QOpenGLWidget):
 
         for layer in self.layers[::-1]:
 
-            icon_show_hide_bounds = QRectF(
+            icon_show_hide_bounds = QRect(
                 MARGIN,
-                y + THUMBNAIL_SIZE.width() / 2 - EYE_ICON_WIDTH / 2,
+                y + THUMBNAIL_SIZE.width() // 2 - EYE_ICON_WIDTH // 2,
                 EYE_ICON_WIDTH,
                 EYE_ICON_HEIGHT,
             )
             # Display hide or show icon based on hide state of layer
-            (ICON_HIDE_RENDERER if layer.isHidden else ICON_SHOW_RENDERER).render(painter, icon_show_hide_bounds)
+            painter.drawPixmap(icon_show_hide_bounds, ICON_HIDE_PIXMAP if layer.isHidden else ICON_SHOW_PIXMAP)
 
             layerSize = layer.size()
 
