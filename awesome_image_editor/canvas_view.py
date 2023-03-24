@@ -25,7 +25,7 @@ class LayersCanvasView(QOpenGLWidget):
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
-        painter.fillRect(event.rect(), self.palette().window())
+        painter.fillRect(event.rect(), self.palette().base())
         painter.save()
         painter.setTransform(
             self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
