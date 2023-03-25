@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from PyQt6.QtCore import QStandardPaths, Qt
 from PyQt6.QtGui import QImage
@@ -50,7 +51,9 @@ class MainWindow(QMainWindow):
             if image.isNull():
                 failedFileNames.append(fileName)
                 continue
-            self.layers.append(ImageLayer(image))
+            layer = ImageLayer(image)
+            layer.name = Path(fileName).stem
+            self.layers.append(layer)
 
         self.treeWidget.update()
         self.canvasWidget.update()

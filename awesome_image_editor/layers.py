@@ -9,6 +9,7 @@ class Layer(ABC):
         super().__init__()
         self.isHidden = False
         self.isSelected = False
+        self.name = ""
 
     @abstractmethod
     def draw(self, painter: QPainter):

@@ -138,7 +138,13 @@ class LayersTreeView(QWidget):
                 painter.restore()
 
             # TODO: draw thumbnail frame over thumbnail
-            # TODO: draw layer name
+            layerNameRect = QRect(
+                MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
+                y,
+                self.size().width(),
+                THUMBNAIL_SIZE.height()
+            )
+            painter.drawText(layerNameRect, Qt.AlignmentFlag.AlignVCenter, layer.name)
 
             y += THUMBNAIL_SIZE.width()
 
