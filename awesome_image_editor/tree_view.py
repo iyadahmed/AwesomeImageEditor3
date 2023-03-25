@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtCore import QPointF, QRect, QRectF, QSize, Qt, pyqtSignal, QPoint
 from PyQt6.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPaintEvent, QPixmap, QRegion
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
@@ -52,6 +52,8 @@ class LayersTreeView(QWidget):
         x = 0
         y = 0
 
+        layerUnderMouse: Optional[Layer] = None
+        eyeIconRect: Optional[QRectF] = None
         for layer in self.layers[::-1]:
             if y < event.pos().y() < (y + THUMBNAIL_SIZE.width()):
                 eyeIconRect = QRectF(
@@ -60,16 +62,23 @@ class LayersTreeView(QWidget):
                     EYE_ICON_WIDTH,
                     EYE_ICON_HEIGHT,
                 )
-                if eyeIconRect.contains(event.position()):
-                    # Toggle hidden state
-                    layer.isHidden = not layer.isHidden
-                    self.layerVisibilityChanged.emit()
-                else:
-                    # Toggle selection state
-                    layer.isSelected = not layer.isSelected
-                    self.layerSelectionChanged.emit()
-
+                layerUnderMouse = layer
+                break
             y += THUMBNAIL_SIZE.width()
+
+        if (not(layerUnderMouse is None)) and (not (eyeIconRect is None)):
+            if eyeIconRect.contains(event.position()):
+                # Toggle hidden state
+                layerUnderMouse.isHidden = not layerUnderMouse.isHidden
+                self.layerVisibilityChanged.emit()
+            else:
+                for layer in self.layers:
+                    if layer is layerUnderMouse:
+                        if not layer.isSelected:
+                            layer.isSelected = True
+                            self.layerSelectionChanged.emit()
+                    else:
+                        layer.isSelected = False
 
         self.update()
 
