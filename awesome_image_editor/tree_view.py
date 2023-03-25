@@ -102,7 +102,7 @@ class LayersTreeView(QWidget):
 
             eyeIconRect = QRect(
                 MARGIN,
-                y + THUMBNAIL_SIZE.width() // 2 - EYE_ICON_WIDTH // 2,
+                y + THUMBNAIL_SIZE.height() // 2 - EYE_ICON_HEIGHT // 2,
                 EYE_ICON_WIDTH,
                 EYE_ICON_HEIGHT,
             )
