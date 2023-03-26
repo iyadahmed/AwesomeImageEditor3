@@ -1,7 +1,7 @@
 from operator import sub
 
 from PyQt6.QtCore import QPoint, QSize, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent
+from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent, QPixmap
 from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.layers import Layer
@@ -22,24 +22,39 @@ class LayersCanvasView(QWidget):
         self._panStartPos = QPoint()
         self._panDelta = QPoint()
 
-    def paintEvent(self, event: QPaintEvent) -> None:
+        # Cached canvas
+        self._cached_canvas = QPixmap()
+
+    def repaintCache(self) -> None:
+        self._cached_canvas = QPixmap(self.calcAllLayersSize())
+        self._cached_canvas.fill(Qt.GlobalColor.transparent)
+
         painter = QPainter()
-        painter.begin(self)
-
+        painter.begin(self._cached_canvas)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-
-        painter.fillRect(event.rect(), self.palette().base())
         painter.save()
-        painter.setTransform(
-            self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
-        )
+
         for layer in self.layers:
             if layer.isHidden:
                 continue
             painter.save()
             layer.draw(painter)
             painter.restore()
+
         painter.restore()
+        painter.end()
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        painter = QPainter()
+        painter.begin(self)
+        painter.fillRect(event.rect(), self.palette().base())
+
+        if not self._cached_canvas.isNull():
+            painter.setTransform(
+                self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
+            )
+            painter.drawPixmap(self._cached_canvas.rect(), self._cached_canvas)
+
         painter.end()
 
     def calcAllLayersSize(self):

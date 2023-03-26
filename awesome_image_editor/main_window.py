@@ -31,7 +31,11 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, leftDock)
         self.resizeDocks([leftDock], [self.size().width() // 2], Qt.Orientation.Horizontal)
 
-        self.treeWidget.layerVisibilityChanged.connect(self.canvasWidget.update)
+        def onVisibilityChange():
+            self.canvasWidget.repaintCache()
+            self.canvasWidget.update()
+
+        self.treeWidget.layerVisibilityChanged.connect(onVisibilityChange)
 
         self.createMenus()
 
@@ -56,6 +60,7 @@ class MainWindow(QMainWindow):
             self.layers.append(layer)
 
         self.treeWidget.update()
+        self.canvasWidget.repaintCache()
         self.canvasWidget.update()
         self.canvasWidget.fitView()
 
