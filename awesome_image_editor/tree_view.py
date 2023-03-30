@@ -67,7 +67,7 @@ class LayersTreeView(QWidget):
                     break
                 y += THUMBNAIL_SIZE.width()
 
-            if (not(layerUnderMouse is None)) and (not (eyeIconRect is None)):
+            if (not (layerUnderMouse is None)) and (not (eyeIconRect is None)):
                 if eyeIconRect.contains(event.position()):
                     # Toggle hidden state
                     layerUnderMouse.isHidden = not layerUnderMouse.isHidden
