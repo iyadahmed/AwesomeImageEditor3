@@ -24,12 +24,12 @@ class MainWindow(QMainWindow):
         self.canvasWidget = LayersCanvasView(self.layers)
         self.setCentralWidget(self.canvasWidget)
 
-        leftDock = QDockWidget("Layers", self)
-        leftDock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
+        rightDock = QDockWidget("Layers", self)
+        rightDock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
         self.treeWidget = LayersTreeView(self.layers)
-        leftDock.setWidget(self.treeWidget)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, leftDock)
-        self.resizeDocks([leftDock], [self.size().width() // 2], Qt.Orientation.Horizontal)
+        rightDock.setWidget(self.treeWidget)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, rightDock)
+        self.resizeDocks([rightDock], [self.size().width() // 2], Qt.Orientation.Horizontal)
 
         def onVisibilityChange():
             self.canvasWidget.repaintCache()
