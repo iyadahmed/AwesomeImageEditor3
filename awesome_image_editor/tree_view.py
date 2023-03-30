@@ -65,7 +65,7 @@ class LayersTreeView(QWidget):
                     )
                     layerUnderMouse = layer
                     break
-                y += THUMBNAIL_SIZE.width()
+                y += THUMBNAIL_SIZE.height()
 
             if (not (layerUnderMouse is None)) and (not (eyeIconRect is None)):
                 if eyeIconRect.contains(event.position()):
@@ -147,7 +147,7 @@ class LayersTreeView(QWidget):
             )
             painter.drawText(layerNameRect, Qt.AlignmentFlag.AlignVCenter, layer.name)
 
-            y += THUMBNAIL_SIZE.width()
+            y += THUMBNAIL_SIZE.height()
 
         painter.restore()
         painter.end()
