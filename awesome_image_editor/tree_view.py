@@ -52,35 +52,36 @@ class LayersTreeView(QWidget):
         x = 0
         y = 0
 
-        layerUnderMouse: Optional[Layer] = None
-        eyeIconRect: Optional[QRectF] = None
-        for layer in self.layers[::-1]:
-            if y < event.pos().y() < (y + THUMBNAIL_SIZE.width()):
-                eyeIconRect = QRectF(
-                    MARGIN,
-                    y + THUMBNAIL_SIZE.width() / 2 - EYE_ICON_WIDTH / 2,
-                    EYE_ICON_WIDTH,
-                    EYE_ICON_HEIGHT,
-                )
-                layerUnderMouse = layer
-                break
-            y += THUMBNAIL_SIZE.width()
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            layerUnderMouse: Optional[Layer] = None
+            eyeIconRect: Optional[QRectF] = None
+            for layer in self.layers[::-1]:
+                if y < event.pos().y() < (y + THUMBNAIL_SIZE.width()):
+                    eyeIconRect = QRectF(
+                        MARGIN,
+                        y + THUMBNAIL_SIZE.width() / 2 - EYE_ICON_WIDTH / 2,
+                        EYE_ICON_WIDTH,
+                        EYE_ICON_HEIGHT,
+                    )
+                    layerUnderMouse = layer
+                    break
+                y += THUMBNAIL_SIZE.width()
 
-        if (not(layerUnderMouse is None)) and (not (eyeIconRect is None)):
-            if eyeIconRect.contains(event.position()):
-                # Toggle hidden state
-                layerUnderMouse.isHidden = not layerUnderMouse.isHidden
-                self.layerVisibilityChanged.emit()
-            else:
-                for layer in self.layers:
-                    if layer is layerUnderMouse:
-                        if not layer.isSelected:
-                            layer.isSelected = True
-                            self.layerSelectionChanged.emit()
-                    else:
-                        layer.isSelected = False
+            if (not(layerUnderMouse is None)) and (not (eyeIconRect is None)):
+                if eyeIconRect.contains(event.position()):
+                    # Toggle hidden state
+                    layerUnderMouse.isHidden = not layerUnderMouse.isHidden
+                    self.layerVisibilityChanged.emit()
+                else:
+                    for layer in self.layers:
+                        if layer is layerUnderMouse:
+                            if not layer.isSelected:
+                                layer.isSelected = True
+                                self.layerSelectionChanged.emit()
+                        else:
+                            layer.isSelected = False
 
-        self.update()
+            self.update()
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
