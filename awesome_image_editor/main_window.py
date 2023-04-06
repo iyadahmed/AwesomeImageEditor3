@@ -49,8 +49,10 @@ class MainWindow(QMainWindow):
         fileNames, selectedFilter = QFileDialog.getOpenFileNames(
             self, "Import Image/s", directory, "Image Files (*.jpg *.png *.jpeg)"
         )
-        failedFileNames = []
+        if len(fileNames) == 0:
+            return
 
+        failedFileNames = []
         timer = QTimer(self)
         progress = 0
         fileNamesIter = iter(fileNames)
