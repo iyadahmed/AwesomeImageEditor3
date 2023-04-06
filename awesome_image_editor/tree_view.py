@@ -140,7 +140,6 @@ class LayersTreeView(QWidget):
                 layer.draw(painter)
                 painter.restore()
 
-            # TODO: draw thumbnail frame over thumbnail
             layerNameRect = QRect(
                 MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
                 y,
