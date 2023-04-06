@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from PyQt6.QtCore import QStandardPaths, Qt, QObject, QTimer
+from PyQt6.QtCore import QStandardPaths, Qt, QTimer
 from PyQt6.QtGui import QImage
 from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox, QProgressDialog
 
