@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
         if len(fileNames) == 0:
             return
 
+        # Import images in a non-blocking fashion using a timer and a progress bar dialog
         failedFileNames = []
         timer = QTimer(self)
         progress = 0
