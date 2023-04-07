@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PyQt6.QtCore import QStandardPaths, Qt, QTimer
 from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox, QProgressDialog
+from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox, QProgressDialog, QSplitter
 
 from awesome_image_editor.canvas_view import LayersCanvasView
 from awesome_image_editor.layers import ImageLayer, Layer
@@ -14,29 +14,26 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setStyleSheet(r"""
-            QMainWindow::separator {background: palette(window);}
-            QMainWindow::separator:hover {background: palette(highlight)}
-        """)
-
         self.layers: list[Layer] = []
 
-        self.canvasWidget = LayersCanvasView(self.layers)
-        self.setCentralWidget(self.canvasWidget)
+        splitter = QSplitter()
+        self.setStyleSheet(r"""
+            QSplitter::handle {background: palette(window);}
+            QSplitter::handle:hover {background: palette(highlight)}
+        """)
+        self.setCentralWidget(splitter)
 
-        rightDock = QDockWidget("Layers", self)
-        rightDock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
+        self.canvasWidget = LayersCanvasView(self.layers)
         self.treeWidget = LayersTreeView(self.layers)
-        rightDock.setWidget(self.treeWidget)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, rightDock)
-        self.resizeDocks([rightDock], [self.size().width() // 2], Qt.Orientation.Horizontal)
+        splitter.addWidget(self.canvasWidget)
+        splitter.addWidget(self.treeWidget)
+        splitter.setSizes([self.width() - self.width() // 5, self.width() // 5])
 
         def onVisibilityChange():
             self.canvasWidget.repaintCache()
             self.canvasWidget.update()
 
         self.treeWidget.layerVisibilityChanged.connect(onVisibilityChange)
-
         self.createMenus()
 
     def importImages(self):
