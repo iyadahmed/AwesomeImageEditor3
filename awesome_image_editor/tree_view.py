@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
-from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap
+from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -48,12 +48,31 @@ class LayersTreeView(QWidget):
         super().__init__()
         self.layers = layers
 
+        self.scrollPos = 0
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        numPixels = event.pixelDelta()
+        angleDelta = event.angleDelta()
+
+        if not numPixels.isNull():
+            scrollDelta = numPixels.y()
+        else:
+            scrollDelta = (angleDelta.y() / 15) * 4
+
+        # TODO: change this logic when we have groups (layers is not a list anymore but a tree)
+        scrollLimit = max(THUMBNAIL_SIZE.height() * len(self.layers) - self.height(), 0)
+
+        self.scrollPos = min(max(self.scrollPos - scrollDelta, 0), scrollLimit)
+
+        event.accept()
+        self.update()
+
     def deselectAll(self):
         for layer in self.layers:
             layer.isSelected = False
 
     def findItemUnderPosition(self, pos: QPoint):
-        y = 0
+        y = -self.scrollPos
         x = 0
         for layer in self.layers[::-1]:
             if y < pos.y() < (y + THUMBNAIL_SIZE.height()):
@@ -93,6 +112,8 @@ class LayersTreeView(QWidget):
 
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
+
+        painter.translate(0, -1 * self.scrollPos)
 
         x = 0
         y = 0
