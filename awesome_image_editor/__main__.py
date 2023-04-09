@@ -3,11 +3,13 @@ import platform
 import sys
 from pathlib import PurePath
 
-from PyQt6.QtGui import QColor, QIcon, QPalette
+from PyQt6.QtGui import QColor, QIcon, QPalette, QFontDatabase
 from PyQt6.QtWidgets import QApplication
 
 app = QApplication(sys.argv)
 
+QFontDatabase.addApplicationFont((PurePath(__file__).parent / "fonts" / "Cantarell-VF.otf").as_posix())
+app.setStyleSheet("QWidget {font-family: Cantarell; font-weight: 600;}")
 
 app.setOrganizationName("SideProject")
 app.setOrganizationDomain("side-project.com")
