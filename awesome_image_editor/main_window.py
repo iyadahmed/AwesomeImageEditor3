@@ -3,12 +3,12 @@ from pathlib import Path
 
 from PyQt6.QtCore import QStandardPaths, Qt, QTimer
 from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox, QProgressDialog, QSplitter
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QProgressDialog, QSplitter
 
 from awesome_image_editor.canvas_view import LayersCanvasView
 from awesome_image_editor.layers import ImageLayer, Layer
-from awesome_image_editor.tree_view import LayersTreeView
 from awesome_image_editor.layers_widget import LayersWidget
+from awesome_image_editor.tree_view import LayersTreeView
 
 
 class MainWindow(QMainWindow):
@@ -18,10 +18,12 @@ class MainWindow(QMainWindow):
         self.layers: list[Layer] = []
 
         splitter = QSplitter()
-        self.setStyleSheet(r"""
+        self.setStyleSheet(
+            r"""
             QSplitter::handle {background: palette(window);}
             QSplitter::handle:hover {background: palette(highlight);}
-        """)
+        """
+        )
         self.setCentralWidget(splitter)
 
         self.canvasWidget = LayersCanvasView(self.layers)
@@ -60,7 +62,8 @@ class MainWindow(QMainWindow):
 
         # Disable window exit button https://forum.qt.io/post/423015
         progressDialog.setWindowFlags(
-            Qt.WindowType.Window | Qt.WindowType.WindowTitleHint | Qt.WindowType.CustomizeWindowHint)
+            Qt.WindowType.Window | Qt.WindowType.WindowTitleHint | Qt.WindowType.CustomizeWindowHint
+        )
 
         progressDialog.show()
         progressDialog.setWindowModality(Qt.WindowModality.NonModal)

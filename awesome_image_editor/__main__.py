@@ -3,7 +3,7 @@ import platform
 import sys
 from pathlib import PurePath
 
-from PyQt6.QtGui import QColor, QIcon, QPalette, QFontDatabase
+from PyQt6.QtGui import QColor, QFontDatabase, QIcon, QPalette
 from PyQt6.QtWidgets import QApplication
 
 app = QApplication(sys.argv)

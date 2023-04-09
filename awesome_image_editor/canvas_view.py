@@ -1,7 +1,7 @@
 from operator import sub
 
 from PyQt6.QtCore import QPoint, QSize, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QTransform, QWheelEvent, QPixmap
+from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.layers import Layer

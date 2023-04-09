@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtCore import QPointF, QRect, QRectF, QSize, Qt, pyqtSignal, QPoint
-from PyQt6.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPaintEvent, QPixmap, QRegion
+from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -144,7 +144,7 @@ class LayersTreeView(QWidget):
                 MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
                 y,
                 self.size().width(),
-                THUMBNAIL_SIZE.height()
+                THUMBNAIL_SIZE.height(),
             )
             painter.drawText(layerNameRect, Qt.AlignmentFlag.AlignVCenter, layer.name)
 
