@@ -11,14 +11,14 @@ app = QApplication(sys.argv)
 QFontDatabase.addApplicationFont((PurePath(__file__).parent / "fonts" / "Cantarell-VF.otf").as_posix())
 app.setStyleSheet("QWidget {font-family: Cantarell; font-weight: 600;}")
 
-app.setOrganizationName("SideProject")
-app.setOrganizationDomain("side-project.com")
+app.setOrganizationName("AwesomeImageEditor")
+app.setOrganizationDomain("AwesomeImageEditor.org")
 app.setApplicationName("Awesome Image Editor")
 
 # Fixes app icon not displayed in Windows taskbar
 if platform.system() == "Windows":
-    appid = "sideproject.AwesomeImageEditor"
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)  # type: ignore
+    appID = "AwesomeImageEditor.AwesomeImageEditor"
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # noqa
 
 app.setWindowIcon(QIcon((PurePath(__file__).parent / "icons" / "app2.svg").as_posix()))
 

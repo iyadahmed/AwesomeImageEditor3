@@ -19,10 +19,8 @@ class MainWindow(QMainWindow):
 
         splitter = QSplitter()
         self.setStyleSheet(
-            r"""
-            QSplitter::handle {background: palette(window);}
-            QSplitter::handle:hover {background: palette(highlight);}
-        """
+            "QSplitter::handle {background: palette(window);}"
+            "QSplitter::handle:hover {background: palette(highlight);}"
         )
         self.setCentralWidget(splitter)
 
