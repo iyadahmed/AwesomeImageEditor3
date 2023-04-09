@@ -1,15 +1,17 @@
 import ctypes
 import platform
 import sys
-from pathlib import PurePath
+from pathlib import PurePath, Path
 
 from PyQt6.QtGui import QColor, QFontDatabase, QIcon, QPalette
 from PyQt6.QtWidgets import QApplication
 
 app = QApplication(sys.argv)
 
-QFontDatabase.addApplicationFont((PurePath(__file__).parent / "fonts" / "Cantarell-VF.otf").as_posix())
-app.setStyleSheet("QWidget {font-family: Cantarell; font-weight: 600;}")
+for entry in (Path(__file__).parent / "fonts/cantarell").iterdir():
+    fontID = QFontDatabase.addApplicationFont(entry.as_posix())
+
+app.setStyleSheet("QWidget {font-family: \"Cantarell Regular\";}")
 
 app.setOrganizationName("AwesomeImageEditor")
 app.setOrganizationDomain("AwesomeImageEditor.org")
