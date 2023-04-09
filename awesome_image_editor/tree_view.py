@@ -146,7 +146,11 @@ class LayersTreeView(QWidget):
                 self.size().width(),
                 THUMBNAIL_SIZE.height(),
             )
+            painter.save()
+            if layer.isSelected:
+                painter.setPen(QApplication.palette().highlightedText().color())
             painter.drawText(layerNameRect, Qt.AlignmentFlag.AlignVCenter, layer.name)
+            painter.restore()
 
             y += THUMBNAIL_SIZE.height()
 
