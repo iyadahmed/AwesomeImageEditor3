@@ -41,7 +41,8 @@ palette.setColor(QPalette.ColorRole.Highlight, QColor(56, 20, 35))
 palette.setColor(QPalette.ColorRole.HighlightedText, QColor(167, 0, 72))
 app.setPalette(palette)
 
-# NOTE: Application is created and pallete is setup before importing MainWindow to ensure QApplication is created before loading any pixmaps or accessing any pallete colors
+# NOTE: Application is created and palette is set up before importing MainWindow to ensure QApplication is created
+# before loading any Pixmap objects or accessing any palette colors
 
 from awesome_image_editor.main_window import MainWindow
 
