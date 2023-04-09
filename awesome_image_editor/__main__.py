@@ -44,7 +44,7 @@ app.setPalette(palette)
 # NOTE: Application is created and palette is set up before importing MainWindow to ensure QApplication is created
 # before loading any Pixmap objects or accessing any palette colors
 
-from awesome_image_editor.main_window import MainWindow
+from awesome_image_editor.main_window import MainWindow  # noqa
 
 mainWindow = MainWindow()
 mainWindow.showMaximized()
