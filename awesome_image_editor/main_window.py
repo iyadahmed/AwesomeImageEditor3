@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import QDockWidget, QFileDialog, QMainWindow, QMessageBox, 
 from awesome_image_editor.canvas_view import LayersCanvasView
 from awesome_image_editor.layers import ImageLayer, Layer
 from awesome_image_editor.tree_view import LayersTreeView
+from awesome_image_editor.layers_widget import LayersWidget
 
 
 class MainWindow(QMainWindow):
@@ -25,8 +26,9 @@ class MainWindow(QMainWindow):
 
         self.canvasWidget = LayersCanvasView(self.layers)
         self.treeWidget = LayersTreeView(self.layers)
+        layersWidget = LayersWidget(self.treeWidget)
         splitter.addWidget(self.canvasWidget)
-        splitter.addWidget(self.treeWidget)
+        splitter.addWidget(layersWidget)
         splitter.setSizes([self.width() - self.width() // 5, self.width() // 5])
 
         def onVisibilityChange():
