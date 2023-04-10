@@ -107,9 +107,7 @@ class LayersCanvasView(QWidget):
         self._isPanning = False
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        if (event.buttons() & Qt.MouseButton.MiddleButton) or (
-                (event.buttons() & Qt.MouseButton.LeftButton) and self._isSpaceBarHeld
-        ):
+        if (event.buttons() & Qt.MouseButton.LeftButton) and self._isSpaceBarHeld:
             self.panStart(event.pos())
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
