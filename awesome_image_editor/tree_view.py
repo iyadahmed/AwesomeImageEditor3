@@ -99,8 +99,11 @@ class LayersTreeView(QWidget):
             self.layerVisibilityChanged.emit()
         else:
             if event.buttons() & Qt.MouseButton.LeftButton:
-                self.deselectAll()
-                layer.isSelected = True
+                if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+                    layer.isSelected = not layer.isSelected
+                else:
+                    self.deselectAll()
+                    layer.isSelected = True
 
         self.update()
 
