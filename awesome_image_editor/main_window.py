@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
 
         self.treeWidget.layerVisibilityChanged.connect(onVisibilityChange)
         self.treeWidget.layersDeleted.connect(onVisibilityChange)
+        self.treeWidget.layersOrderChanged.connect(onVisibilityChange)
         self.createMenus()
 
     def importImages(self):
