@@ -84,14 +84,15 @@ class LayersCanvasView(QWidget):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Space:
+            self.setCursor(Qt.CursorShape.OpenHandCursor)
             self._isSpaceBarHeld = True
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Space:
+            self.setCursor(Qt.CursorShape.ArrowCursor)
             self._isSpaceBarHeld = False
 
     def panStart(self, pos: QPoint):
-        self.setCursor(Qt.CursorShape.OpenHandCursor)
         self._panStartPos = pos
         self._isPanning = True
 
@@ -100,7 +101,6 @@ class LayersCanvasView(QWidget):
         self.update()
 
     def panEnd(self):
-        self.setCursor(Qt.CursorShape.ArrowCursor)
         self._transform *= QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
         self._panDelta = QPoint()
         self.update()
@@ -108,7 +108,7 @@ class LayersCanvasView(QWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if (event.buttons() & Qt.MouseButton.MiddleButton) or (
-            (event.buttons() & Qt.MouseButton.LeftButton) and self._isSpaceBarHeld
+                (event.buttons() & Qt.MouseButton.LeftButton) and self._isSpaceBarHeld
         ):
             self.panStart(event.pos())
 
