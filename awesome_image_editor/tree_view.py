@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
-from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent
+from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent, QResizeEvent
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -102,6 +102,10 @@ class LayersTreeView(QWidget):
 
     def updateScrollPos(self, scrollDelta: Union[int, float]):
         self._scrollPos = clamp(self._scrollPos - scrollDelta, 0, self.calcMaxScrollPos())
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        self.updateScrollPos(0)
+        super().resizeEvent(event)
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         numPixels = event.pixelDelta()
