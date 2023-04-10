@@ -24,5 +24,4 @@ class LayersWidget(QWidget):
         titleLayout.addWidget(titleLabel)
 
         layout.addLayout(titleLayout)
-        # layout.addWidget(label, stretch=0, alignment=Qt.AlignmentFlag.AlignTop)
         layout.addWidget(tree_view, stretch=1)
