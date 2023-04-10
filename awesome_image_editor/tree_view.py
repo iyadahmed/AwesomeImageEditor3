@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent
@@ -40,6 +40,16 @@ ICON_VISIBLE_HIGHLIGHT_PIXMAP = pixmapFromSVG(
 )
 
 
+def clamp(value, lower, upper):
+    if value > upper:
+        return upper
+
+    if value < lower:
+        return lower
+
+    return value
+
+
 class LayersTreeView(QWidget):
     layerVisibilityChanged = pyqtSignal()
     layerSelectionChanged = pyqtSignal()
@@ -50,7 +60,7 @@ class LayersTreeView(QWidget):
         super().__init__()
         self.layers = layers
 
-        self.scrollPos = 0
+        self._scrollPos = 0
 
     def deleteSelected(self):
         # TODO: improve memory usage? a copy of list is made and filtered,
@@ -78,6 +88,21 @@ class LayersTreeView(QWidget):
         self.update()
         self.layersOrderChanged.emit()
 
+    def calcItemsScreenHeight(self):
+        # TODO: change this logic when we have groups (layers is not a list anymore but a tree),
+        #       or when items have different height
+        return THUMBNAIL_SIZE.height() * len(self.layers)
+
+    def calcMaxScrollPos(self):
+        """Calculate the scroll position needed to make the very bottom item visible without excess,
+        if the widget height is already enough to display all items it returns 0 (no need to scroll) """
+        if self.height() >= self.calcItemsScreenHeight():
+            return 0
+        return self.calcItemsScreenHeight() - self.height()
+
+    def updateScrollPos(self, scrollDelta: Union[int, float]):
+        self._scrollPos = clamp(self._scrollPos - scrollDelta, 0, self.calcMaxScrollPos())
+
     def wheelEvent(self, event: QWheelEvent) -> None:
         numPixels = event.pixelDelta()
         angleDelta = event.angleDelta()
@@ -87,10 +112,9 @@ class LayersTreeView(QWidget):
         else:
             scrollDelta = (angleDelta.y() / 15) * 4
 
-        # TODO: change this logic when we have groups (layers is not a list anymore but a tree)
-        scrollLimit = max(THUMBNAIL_SIZE.height() * len(self.layers) - self.height(), 0)
-
-        self.scrollPos = min(max(self.scrollPos - scrollDelta, 0), scrollLimit)
+        if self.height() < self.calcItemsScreenHeight():
+            # Only scroll if height is not enough to display all items
+            self.updateScrollPos(scrollDelta)
 
         event.accept()
         self.update()
@@ -100,7 +124,7 @@ class LayersTreeView(QWidget):
             layer.isSelected = False
 
     def findItemUnderPosition(self, pos: QPoint):
-        y = -self.scrollPos
+        y = -self._scrollPos
         x = 0
         for layer in self.layers[::-1]:
             if y < pos.y() < (y + THUMBNAIL_SIZE.height()):
@@ -144,7 +168,7 @@ class LayersTreeView(QWidget):
         painter.fillRect(event.rect(), self.palette().window())
         painter.save()
 
-        painter.translate(0, -1 * self.scrollPos)
+        painter.translate(0, -1 * self._scrollPos)
 
         x = 0
         y = 0
