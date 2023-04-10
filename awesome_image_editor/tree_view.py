@@ -43,12 +43,23 @@ ICON_VISIBLE_HIGHLIGHT_PIXMAP = pixmapFromSVG(
 class LayersTreeView(QWidget):
     layerVisibilityChanged = pyqtSignal()
     layerSelectionChanged = pyqtSignal()
+    layersDeleted = pyqtSignal()
 
     def __init__(self, layers: list[Layer]):
         super().__init__()
         self.layers = layers
 
         self.scrollPos = 0
+
+    def deleteSelected(self):
+        # TODO: improve memory usage? a copy of list is made and filtered,
+        #       so it uses more memory for a moment,
+        #       also it is done anyways even if there are no selected layers
+        new_layers = [layer for layer in self.layers if not layer.isSelected]
+        self.layers.clear()
+        self.layers.extend(new_layers)
+        self.update()
+        self.layersDeleted.emit()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         numPixels = event.pixelDelta()
