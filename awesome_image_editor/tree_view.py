@@ -44,6 +44,7 @@ class LayersTreeView(QWidget):
     layerVisibilityChanged = pyqtSignal()
     layerSelectionChanged = pyqtSignal()
     layersDeleted = pyqtSignal()
+    layersOrderChanged = pyqtSignal()
 
     def __init__(self, layers: list[Layer]):
         super().__init__()
@@ -60,6 +61,22 @@ class LayersTreeView(QWidget):
         self.layers.extend(new_layers)
         self.update()
         self.layersDeleted.emit()
+
+    def raiseSelectedLayers(self):
+        for i in range(len(self.layers) - 2, -1, -1):
+            if self.layers[i].isSelected and (not self.layers[i + 1].isSelected):
+                self.layers[i + 1], self.layers[i] = self.layers[i], self.layers[i + 1]
+
+        self.update()
+        self.layersOrderChanged.emit()
+
+    def lowerSelectedLayers(self):
+        for i in range(len(self.layers) - 1):
+            if self.layers[i + 1].isSelected and (not self.layers[i].isSelected):
+                self.layers[i], self.layers[i + 1] = self.layers[i + 1], self.layers[i]
+
+        self.update()
+        self.layersOrderChanged.emit()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         numPixels = event.pixelDelta()

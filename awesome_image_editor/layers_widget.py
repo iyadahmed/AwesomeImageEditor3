@@ -8,6 +8,8 @@ from awesome_image_editor.tree_view import LayersTreeView
 
 ICON_LAYERS = QIcon((Path(__file__).parent / "icons/layers/layers_dialog.svg").as_posix())
 ICON_DELETE = QIcon((Path(__file__).parent / "icons/layers/delete_btn.svg").as_posix())
+ICON_LOWER = QIcon((Path(__file__).parent / "icons/layers/lower_layer_onestep.svg").as_posix())
+ICON_RAISE = QIcon((Path(__file__).parent / "icons/layers/raise_layer_onestep.svg").as_posix())
 
 
 class LayersWidget(QWidget):
@@ -29,4 +31,6 @@ class LayersWidget(QWidget):
 
         toolbar = QToolBar()
         toolbar.addAction(ICON_DELETE, "Delete", tree_view.deleteSelected)
+        toolbar.addAction(ICON_RAISE, "Raise", tree_view.raiseSelectedLayers)
+        toolbar.addAction(ICON_LOWER, "Lower", tree_view.lowerSelectedLayers)
         layout.addWidget(toolbar)
