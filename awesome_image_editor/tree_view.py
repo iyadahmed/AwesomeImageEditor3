@@ -76,9 +76,9 @@ class LayersTreeView(QWidget):
         self.layersDeleted.emit()
 
     def raiseSelectedLayers(self):
-        for i in range(len(self.layers) - 2, -1, -1):
+        for i in range(len(self.layers) - 1)[::-1]:
             if self.layers[i].isSelected and (not self.layers[i + 1].isSelected):
-                self.layers[i + 1], self.layers[i] = self.layers[i], self.layers[i + 1]
+                self.layers[i], self.layers[i + 1] = self.layers[i + 1], self.layers[i]
 
         self.update()
         self.layersOrderChanged.emit()
