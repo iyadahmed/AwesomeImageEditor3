@@ -62,6 +62,9 @@ class LayersTreeView(QWidget):
 
         self._scrollPos = 0
 
+        self.layersDeleted.connect(lambda: self.updateScrollPos(0))
+        self.layersOrderChanged.connect(lambda: self.updateScrollPos(0))
+
     def deleteSelected(self):
         # TODO: improve memory usage? a copy of list is made and filtered,
         #       so it uses more memory for a moment,
