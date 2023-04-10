@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
             self.canvasWidget.repaintCache()
             self.canvasWidget.update()
 
-        self.treeWidget.layerVisibilityChanged.connect(onVisibilityChange)
+        self.treeWidget.layersVisibilityChanged.connect(onVisibilityChange)
         self.treeWidget.layersDeleted.connect(onVisibilityChange)
         self.treeWidget.layersOrderChanged.connect(onVisibilityChange)
         self.createMenus()

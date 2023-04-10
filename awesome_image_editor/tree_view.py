@@ -51,8 +51,8 @@ def clamp(value, lower, upper):
 
 
 class LayersTreeView(QWidget):
-    layerVisibilityChanged = pyqtSignal()
-    layerSelectionChanged = pyqtSignal()
+    layersVisibilityChanged = pyqtSignal()
+    layersSelectionChanged = pyqtSignal()
     layersDeleted = pyqtSignal()
     layersOrderChanged = pyqtSignal()
 
@@ -152,7 +152,7 @@ class LayersTreeView(QWidget):
         if eyeIconRect.contains(event.position()):
             # Toggle hidden state
             layer.isHidden = not layer.isHidden
-            self.layerVisibilityChanged.emit()
+            self.layersVisibilityChanged.emit()
         else:
             if event.buttons() & Qt.MouseButton.LeftButton:
                 if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
