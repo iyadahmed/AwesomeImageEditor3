@@ -30,6 +30,7 @@ class LayersWidget(QWidget):
         layout.addWidget(tree_view, stretch=1)
 
         toolbar = QToolBar()
+        toolbar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         toolbar.addAction(ICON_DELETE, "Delete", tree_view.deleteSelected)
         toolbar.addAction(ICON_RAISE, "Raise", tree_view.raiseSelectedLayers)
         toolbar.addAction(ICON_LOWER, "Lower", tree_view.lowerSelectedLayers)
