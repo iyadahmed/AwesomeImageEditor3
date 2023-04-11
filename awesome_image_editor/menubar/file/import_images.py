@@ -24,6 +24,7 @@ def importImages(parent: QWidget, project: ProjectModel):
 
     # Import images in a non-blocking fashion using a timer and a progress bar dialog
     failedFileNames = []
+    importedLayers = []
     timer = QTimer(parent)
     progress = 0
     fileNamesIter = iter(fileNames)
@@ -40,6 +41,7 @@ def importImages(parent: QWidget, project: ProjectModel):
     def finish():
         timer.stop()
         progressDialog.setValue(len(fileNames))
+        project.addLayersToFront(importedLayers)
         project.layersAdded.emit()
         if len(failedFileNames) > 0:
             QMessageBox.warning(
@@ -65,7 +67,7 @@ def importImages(parent: QWidget, project: ProjectModel):
 
         layer = ImageLayer(image)
         layer.name = Path(fileName).stem
-        project.addLayerToFront(layer)
+        importedLayers.append(layer)
 
     # progressDialog.canceled.connect(finish)  # In case we want to make it cancellable later
     timer.timeout.connect(importImage)

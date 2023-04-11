@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from PyQt6.QtCore import QSize, pyqtSignal, QObject
 
 from awesome_image_editor.layers import Layer
@@ -19,6 +21,9 @@ class ProjectModel(QObject):
 
     def addLayerToFront(self, layer: Layer):
         self._layers.append(layer)
+
+    def addLayersToFront(self, layers: Iterable[Layer]):
+        self._layers.extend(layers)
 
     def iterLayersBackToFront(self):
         return iter(self._layers)
