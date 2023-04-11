@@ -13,31 +13,32 @@ EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 10
 
 
-def pixmapFromSVG(filepath: Path, size: QSize, tint: Optional[QBrush] = None):
+def pixmapFromSVG(filepath: Path, size: QSize):
     pixmap = QPixmap(size)
     pixmap.fill(Qt.GlobalColor.transparent)
     renderer = QSvgRenderer(filepath.as_posix())
     painter = QPainter()
     painter.begin(pixmap)
     renderer.render(painter, QRectF(QPointF(0, 0), size.toSizeF()))
-
-    if not (tint is None):
-        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
-        painter.fillRect(pixmap.rect(), tint)
-
     painter.end()
     return pixmap
 
 
+def getTintedPixmap(pixmap: QPixmap, tint: Optional[QBrush]):
+    tintedPixmap = pixmap.copy()
+    painter = QPainter()
+    painter.begin(tintedPixmap)
+    painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+    painter.fillRect(tintedPixmap.rect(), tint)
+    painter.end()
+    return tintedPixmap
+
+
 ICON_HIDDEN_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hidden.svg", THUMBNAIL_SIZE)
-ICON_HIDDEN_HIGHLIGHT_PIXMAP = pixmapFromSVG(
-    Path(__file__).parent / "icons/layers/hidden.svg", THUMBNAIL_SIZE, QApplication.palette().highlightedText()
-)
+ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, QApplication.palette().highlightedText())
 
 ICON_VISIBLE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/visible.svg", THUMBNAIL_SIZE)
-ICON_VISIBLE_HIGHLIGHT_PIXMAP = pixmapFromSVG(
-    Path(__file__).parent / "icons/layers/visible.svg", THUMBNAIL_SIZE, QApplication.palette().highlightedText()
-)
+ICON_VISIBLE_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_VISIBLE_PIXMAP, QApplication.palette().highlightedText())
 
 
 def clamp(value, lower, upper):
