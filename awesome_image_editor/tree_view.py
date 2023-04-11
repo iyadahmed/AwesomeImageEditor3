@@ -57,6 +57,8 @@ class TreeView(QWidget):
         self.layersDeleted.connect(lambda: self.updateScrollPos(0))
         self.layersOrderChanged.connect(lambda: self.updateScrollPos(0))
 
+        # Needed to get mouse move events without user clicking left mouse button
+        # (for example, it is needed for setting mouse pointer based on location in widget)
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
