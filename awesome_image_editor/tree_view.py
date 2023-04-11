@@ -57,6 +57,18 @@ class TreeView(QWidget):
         self.layersDeleted.connect(lambda: self.updateScrollPos(0))
         self.layersOrderChanged.connect(lambda: self.updateScrollPos(0))
 
+        self.setMouseTracking(True)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if event.pos().y() < (self.calcItemsScreenHeight() - self._scrollPos):
+            if self.cursor() != Qt.CursorShape.PointingHandCursor:
+                self.setCursor(Qt.CursorShape.PointingHandCursor)
+        else:
+            if self.cursor() != Qt.CursorShape.ArrowCursor:
+                self.setCursor(Qt.CursorShape.ArrowCursor)
+
+        event.accept()
+
     @property
     def layers(self):
         return self._project.layers
