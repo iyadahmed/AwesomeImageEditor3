@@ -16,6 +16,7 @@ class LayersWidget(QWidget):
     def __init__(self, tree_view: TreeView):
         super().__init__()
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         titleLayout = QHBoxLayout()
