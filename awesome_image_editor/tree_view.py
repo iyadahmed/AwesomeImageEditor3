@@ -185,13 +185,13 @@ class TreeView(QWidget):
         y = 0
 
         for layer in self.layers[::-1]:
-            treeItemRect = QRect(0, y, self.size().width(), THUMBNAIL_SIZE.height())
+            treeItemRect = QRect(x, y, self.size().width(), THUMBNAIL_SIZE.height())
 
             if layer.isSelected:
                 painter.fillRect(treeItemRect, self.palette().highlight())
 
             eyeIconRect = QRect(
-                MARGIN,
+                x + MARGIN,
                 y + THUMBNAIL_SIZE.height() // 2 - EYE_ICON_HEIGHT // 2,
                 EYE_ICON_WIDTH,
                 EYE_ICON_HEIGHT,
@@ -209,7 +209,7 @@ class TreeView(QWidget):
 
             if layerSize.width() > 0:
                 thumbnailRect = QRectF(
-                    MARGIN + EYE_ICON_WIDTH + MARGIN,
+                    x + MARGIN + EYE_ICON_WIDTH + MARGIN,
                     y,
                     THUMBNAIL_SIZE.width(),
                     THUMBNAIL_SIZE.height(),
@@ -228,7 +228,7 @@ class TreeView(QWidget):
                 painter.restore()
 
             layerNameRect = QRect(
-                MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
+                x + MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
                 y,
                 self.size().width(),
                 THUMBNAIL_SIZE.height(),
