@@ -22,7 +22,8 @@ class CanvasView(QWidget):
         self._panDelta = QPoint()
 
         # Cached canvas
-        self._cached_canvas = QPixmap()
+        self._cached_canvas = QPixmap(project.canvasSize)
+        self._cached_canvas.fill(Qt.GlobalColor.transparent)
 
     @property
     def layers(self):
@@ -33,7 +34,6 @@ class CanvasView(QWidget):
         return self._project.canvasSize
 
     def repaintCache(self) -> None:
-        self._cached_canvas = QPixmap(self.canvasSize)
         self._cached_canvas.fill(Qt.GlobalColor.transparent)
 
         painter = QPainter()
