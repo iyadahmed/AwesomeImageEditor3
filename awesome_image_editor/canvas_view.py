@@ -13,7 +13,6 @@ class CanvasView(QWidget):
         self._project = project
 
         self._transform = QTransform()
-        self._transform2 = QTransform()
 
         # Panning
         self.grabKeyboard()
@@ -58,9 +57,7 @@ class CanvasView(QWidget):
         painter.fillRect(event.rect(), self.palette().base())
 
         if not self._cached_canvas.isNull():
-            painter.setTransform(
-                self._transform2 * self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
-            )
+            painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
             painter.drawPixmap(self._cached_canvas.rect(), self._cached_canvas)
 
         painter.end()
@@ -82,11 +79,11 @@ class CanvasView(QWidget):
         scaledSize = size.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
         scale = scaledSize.width() / size.width()
 
-        self._transform2 = QTransform()
-        self._transform2.translate(
+        self._transform = QTransform()
+        self._transform.translate(
             self.size().width() / 2 - scaledSize.width() / 2, self.size().height() / 2 - scaledSize.height() / 2
         )
-        self._transform2.scale(scale, scale)
+        self._transform.scale(scale, scale)
 
         self.update()
 
