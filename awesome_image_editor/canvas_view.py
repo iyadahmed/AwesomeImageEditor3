@@ -27,11 +27,11 @@ class CanvasView(QWidget):
 
     @property
     def layers(self):
-        return self._project._layers
+        return self._project.layers
 
     @property
     def canvasSize(self):
-        return self._project._canvasSize
+        return self._project.canvasSize
 
     def repaintCache(self) -> None:
         self._cached_canvas = QPixmap(self.canvasSize)

@@ -67,7 +67,7 @@ class TreeView(QWidget):
 
     @property
     def layers(self):
-        return self._project._layers
+        return self._project.layers
 
     def deleteSelected(self):
         # TODO: improve memory usage? a copy of list is made and filtered,
