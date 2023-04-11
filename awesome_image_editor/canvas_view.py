@@ -4,13 +4,13 @@ from PyQt6.QtCore import QPoint, QSize, Qt
 from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
-from awesome_image_editor.layers import Layer
+from awesome_image_editor.project import Project
 
 
-class LayersCanvasView(QWidget):
-    def __init__(self, layers: list[Layer]):
+class CanvasView(QWidget):
+    def __init__(self, project: Project):
         super().__init__()
-        self.layers = layers
+        self._project = project
 
         self._transform = QTransform()
         self._transform2 = QTransform()
@@ -25,8 +25,16 @@ class LayersCanvasView(QWidget):
         # Cached canvas
         self._cached_canvas = QPixmap()
 
+    @property
+    def layers(self):
+        return self._project._layers
+
+    @property
+    def canvasSize(self):
+        return self._project._canvasSize
+
     def repaintCache(self) -> None:
-        self._cached_canvas = QPixmap(self.calcAllLayersSize())
+        self._cached_canvas = QPixmap(self.canvasSize)
         self._cached_canvas.fill(Qt.GlobalColor.transparent)
 
         painter = QPainter()
@@ -66,7 +74,7 @@ class LayersCanvasView(QWidget):
         return size
 
     def fitView(self):
-        size = self.calcAllLayersSize()
+        size = self.canvasSize
         if size.width() == 0:
             # Avoid division by zero
             return

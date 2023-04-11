@@ -6,7 +6,7 @@ from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWh
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
-from awesome_image_editor.layers import Layer
+from awesome_image_editor.project import Project
 
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
@@ -50,20 +50,24 @@ def clamp(value, lower, upper):
     return value
 
 
-class LayersTreeView(QWidget):
+class TreeView(QWidget):
     layersVisibilityChanged = pyqtSignal()
     layersSelectionChanged = pyqtSignal()
     layersDeleted = pyqtSignal()
     layersOrderChanged = pyqtSignal()
 
-    def __init__(self, layers: list[Layer]):
+    def __init__(self, project: Project):
         super().__init__()
-        self.layers = layers
+        self._project = project
 
         self._scrollPos = 0
 
         self.layersDeleted.connect(lambda: self.updateScrollPos(0))
         self.layersOrderChanged.connect(lambda: self.updateScrollPos(0))
+
+    @property
+    def layers(self):
+        return self._project._layers
 
     def deleteSelected(self):
         # TODO: improve memory usage? a copy of list is made and filtered,

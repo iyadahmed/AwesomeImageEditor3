@@ -1,21 +1,22 @@
 import os
 from pathlib import Path
 
-from PyQt6.QtCore import QStandardPaths, Qt, QTimer
+from PyQt6.QtCore import QStandardPaths, Qt, QTimer, QSize
 from PyQt6.QtGui import QImage
 from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QProgressDialog, QSplitter
 
-from awesome_image_editor.canvas_view import LayersCanvasView
-from awesome_image_editor.layers import ImageLayer, Layer
+from awesome_image_editor.canvas_view import CanvasView
+from awesome_image_editor.layers import ImageLayer
 from awesome_image_editor.layers_widget import LayersWidget
-from awesome_image_editor.tree_view import LayersTreeView
+from awesome_image_editor.tree_view import TreeView
+from awesome_image_editor.project import Project
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.layers: list[Layer] = []
+        self.project = Project(QSize(1920, 1080))
 
         splitter = QSplitter()
         self.setStyleSheet(
@@ -24,8 +25,8 @@ class MainWindow(QMainWindow):
         )
         self.setCentralWidget(splitter)
 
-        self.canvasWidget = LayersCanvasView(self.layers)
-        self.treeWidget = LayersTreeView(self.layers)
+        self.canvasWidget = CanvasView(self.project)
+        self.treeWidget = TreeView(self.project)
         layersWidget = LayersWidget(self.treeWidget)
         splitter.addWidget(self.canvasWidget)
         splitter.addWidget(layersWidget)
@@ -99,7 +100,7 @@ class MainWindow(QMainWindow):
 
             layer = ImageLayer(image)
             layer.name = Path(fileName).stem
-            self.layers.append(layer)
+            self.project.layers.append(layer)
 
         # progressDialog.canceled.connect(finish)  # In case we want to make it cancellable later
         timer.timeout.connect(importImage)
