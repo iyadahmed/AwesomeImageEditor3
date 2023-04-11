@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
-from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent, QResizeEvent
+from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent, QResizeEvent, QIcon
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -11,17 +11,6 @@ from awesome_image_editor.project import Project
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 10
-
-
-def pixmapFromSVG(filepath: Path, size: QSize):
-    pixmap = QPixmap(size)
-    pixmap.fill(Qt.GlobalColor.transparent)
-    renderer = QSvgRenderer(filepath.as_posix())
-    painter = QPainter()
-    painter.begin(pixmap)
-    renderer.render(painter, QRectF(QPointF(0, 0), size.toSizeF()))
-    painter.end()
-    return pixmap
 
 
 def getTintedPixmap(pixmap: QPixmap, tint: Optional[QBrush]):
@@ -34,10 +23,12 @@ def getTintedPixmap(pixmap: QPixmap, tint: Optional[QBrush]):
     return tintedPixmap
 
 
-ICON_HIDDEN_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/hidden.svg", THUMBNAIL_SIZE)
+ICON_HIDDEN_PIXMAP = QIcon((Path(__file__).parent / "icons/layers/hidden.svg").as_posix()).pixmap(
+    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
 ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, QApplication.palette().highlightedText())
 
-ICON_VISIBLE_PIXMAP = pixmapFromSVG(Path(__file__).parent / "icons/layers/visible.svg", THUMBNAIL_SIZE)
+ICON_VISIBLE_PIXMAP = QIcon((Path(__file__).parent / "icons/layers/visible.svg").as_posix()).pixmap(
+    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
 ICON_VISIBLE_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_VISIBLE_PIXMAP, QApplication.palette().highlightedText())
 
 
