@@ -4,6 +4,7 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QToolBar
 
+from awesome_image_editor.project_model import ProjectModel
 from awesome_image_editor.tree_view import TreeView
 
 ICON_LAYERS = QIcon((Path(__file__).parent / "icons/layers/layers_dialog.svg").as_posix())
@@ -12,8 +13,31 @@ ICON_LOWER = QIcon((Path(__file__).parent / "icons/layers/lower_layer_onestep.sv
 ICON_RAISE = QIcon((Path(__file__).parent / "icons/layers/raise_layer_onestep.svg").as_posix())
 
 
+class LayersToolbar(QToolBar):
+    def __init__(self, project: ProjectModel):
+        super().__init__()
+        self._project = project
+
+        self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.addAction(ICON_DELETE, "Delete", self.onIconDeletePress)
+        self.addAction(ICON_RAISE, "Raise", self.onIconRaisePress)
+        self.addAction(ICON_LOWER, "Lower", self.onIconLowerPress)
+
+    def onIconDeletePress(self):
+        self._project.deleteSelected()
+        self._project.layersDeleted.emit()
+
+    def onIconRaisePress(self):
+        self._project.raiseSelectedLayers()
+        self._project.layersOrderChanged.emit()
+
+    def onIconLowerPress(self):
+        self._project.lowerSelectedLayers()
+        self._project.layersOrderChanged.emit()
+
+
 class LayersWidget(QWidget):
-    def __init__(self, tree_view: TreeView):
+    def __init__(self, project: ProjectModel):
         super().__init__()
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -28,11 +52,5 @@ class LayersWidget(QWidget):
         titleLayout.addWidget(titleLabel)
 
         layout.addLayout(titleLayout)
-        layout.addWidget(tree_view, stretch=1)
-
-        toolbar = QToolBar()
-        toolbar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        toolbar.addAction(ICON_DELETE, "Delete", tree_view.deleteSelected)
-        toolbar.addAction(ICON_RAISE, "Raise", tree_view.raiseSelectedLayers)
-        toolbar.addAction(ICON_LOWER, "Lower", tree_view.lowerSelectedLayers)
-        layout.addWidget(toolbar)
+        layout.addWidget(TreeView(project), stretch=1)
+        layout.addWidget(LayersToolbar(project))

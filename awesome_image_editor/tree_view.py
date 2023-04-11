@@ -6,7 +6,7 @@ from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWh
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtWidgets import QApplication, QWidget
 
-from awesome_image_editor.project import Project
+from awesome_image_editor.project_model import ProjectModel
 
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
@@ -43,23 +43,26 @@ def clamp(value, lower, upper):
 
 
 class TreeView(QWidget):
-    layersVisibilityChanged = pyqtSignal()
-    layersSelectionChanged = pyqtSignal()
-    layersDeleted = pyqtSignal()
-    layersOrderChanged = pyqtSignal()
-
-    def __init__(self, project: Project):
+    def __init__(self, project: ProjectModel):
         super().__init__()
         self._project = project
 
         self._scrollPos = 0
 
-        self.layersDeleted.connect(lambda: self.updateScrollPos(0))
-        self.layersOrderChanged.connect(lambda: self.updateScrollPos(0))
-
         # Needed to get mouse move events without user clicking left mouse button
         # (for example, it is needed for setting mouse pointer based on location in widget)
         self.setMouseTracking(True)
+
+        # Connect signals
+        project.layersAdded.connect(lambda: self.updateScrollPos(0))
+        project.layersDeleted.connect(lambda: self.updateScrollPos(0))
+        project.layersOrderChanged.connect(lambda: self.update())
+        project.layersVisibilityChanged.connect(lambda: self.update())
+        project.layersSelectionChanged.connect(lambda: self.update())
+
+    @property
+    def project(self):
+        return self._project
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if event.pos().y() < (self.calcItemsScreenHeight() - self._scrollPos):
@@ -71,40 +74,10 @@ class TreeView(QWidget):
 
         event.accept()
 
-    @property
-    def layers(self):
-        return self._project.layers
-
-    def deleteSelected(self):
-        # TODO: improve memory usage? a copy of list is made and filtered,
-        #       so it uses more memory for a moment,
-        #       also it is done anyways even if there are no selected layers
-        new_layers = [layer for layer in self.layers if not layer.isSelected]
-        self.layers.clear()
-        self.layers.extend(new_layers)
-        self.update()
-        self.layersDeleted.emit()
-
-    def raiseSelectedLayers(self):
-        for i in range(len(self.layers) - 1)[::-1]:
-            if self.layers[i].isSelected and (not self.layers[i + 1].isSelected):
-                self.layers[i], self.layers[i + 1] = self.layers[i + 1], self.layers[i]
-
-        self.update()
-        self.layersOrderChanged.emit()
-
-    def lowerSelectedLayers(self):
-        for i in range(len(self.layers) - 1):
-            if self.layers[i + 1].isSelected and (not self.layers[i].isSelected):
-                self.layers[i], self.layers[i + 1] = self.layers[i + 1], self.layers[i]
-
-        self.update()
-        self.layersOrderChanged.emit()
-
     def calcItemsScreenHeight(self):
         # TODO: change this logic when we have groups (layers is not a list anymore but a tree),
         #       or when items have different height
-        return THUMBNAIL_SIZE.height() * len(self.layers)
+        return sum(THUMBNAIL_SIZE.height() for _ in self._project.iterLayersFrontToBack())
 
     def calcMaxScrollPos(self):
         """Calculate the scroll position needed to make the very bottom item visible without excess,
@@ -115,6 +88,7 @@ class TreeView(QWidget):
 
     def updateScrollPos(self, scrollDelta: Union[int, float]):
         self._scrollPos = clamp(self._scrollPos - scrollDelta, 0, self.calcMaxScrollPos())
+        self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         self.updateScrollPos(0)
@@ -134,16 +108,11 @@ class TreeView(QWidget):
             self.updateScrollPos(scrollDelta)
 
         event.accept()
-        self.update()
-
-    def deselectAll(self):
-        for layer in self.layers:
-            layer.isSelected = False
 
     def findItemUnderPosition(self, pos: QPoint):
         y = -self._scrollPos
         x = 0
-        for layer in self.layers[::-1]:
+        for layer in self._project.iterLayersFrontToBack():
             if y < pos.y() < (y + THUMBNAIL_SIZE.height()):
                 eyeIconRect = QRectF(
                     x + MARGIN,
@@ -165,16 +134,17 @@ class TreeView(QWidget):
         if eyeIconRect.contains(event.position()):
             # Toggle hidden state
             layer.isHidden = not layer.isHidden
-            self.layersVisibilityChanged.emit()
+            self.project.layersVisibilityChanged.emit()
         else:
             if event.buttons() & Qt.MouseButton.LeftButton:
                 if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
                     layer.isSelected = not layer.isSelected
                 else:
-                    self.deselectAll()
+                    self._project.deselectAll()
                     layer.isSelected = True
+                self.project.layersSelectionChanged.emit()
 
-        self.update()
+        event.accept()
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
@@ -190,7 +160,7 @@ class TreeView(QWidget):
         x = 0
         y = 0
 
-        for layer in self.layers[::-1]:
+        for layer in self._project.iterLayersFrontToBack():
             treeItemRect = QRect(x, y, self.size().width(), THUMBNAIL_SIZE.height())
 
             if layer.isSelected:

@@ -4,11 +4,11 @@ from PyQt6.QtCore import QPoint, QSize, Qt
 from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
-from awesome_image_editor.project import Project
+from awesome_image_editor.project_model import ProjectModel
 
 
 class CanvasView(QWidget):
-    def __init__(self, project: Project):
+    def __init__(self, project: ProjectModel):
         super().__init__()
         self._project = project
 
@@ -25,9 +25,15 @@ class CanvasView(QWidget):
         self._cached_canvas = QPixmap(project.canvasSize)
         self._cached_canvas.fill(Qt.GlobalColor.transparent)
 
-    @property
-    def layers(self):
-        return self._project.layers
+        # Connect signals
+        def onLayersModify():
+            self.repaintCache()
+            self.update()
+
+        project.layersAdded.connect(onLayersModify)
+        project.layersDeleted.connect(onLayersModify)
+        project.layersOrderChanged.connect(onLayersModify)
+        project.layersVisibilityChanged.connect(onLayersModify)
 
     @property
     def canvasSize(self):
@@ -41,7 +47,7 @@ class CanvasView(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.save()
 
-        for layer in self.layers:
+        for layer in self._project.iterLayersBackToFront():
             if layer.isHidden:
                 continue
             painter.save()
@@ -65,8 +71,8 @@ class CanvasView(QWidget):
     def calcAllLayersSize(self):
         size = QSize()
 
-        for l in self.layers:
-            size = size.expandedTo(l.size())
+        for layer in self._project.iterLayersBackToFront():
+            size = size.expandedTo(layer.size())
 
         return size
 
