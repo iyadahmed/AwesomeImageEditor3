@@ -156,6 +156,15 @@ class TreeView(QWidget):
             yield item
             y += item.height
 
+    def iterVisibleItems(self):
+        for item in self.iterItems():
+            if (item.y + item.height) < 0:
+                continue
+            elif item.y > self.height():
+                break
+            else:
+                yield item
+
     @property
     def project(self):
         return self._project
@@ -238,6 +247,6 @@ class TreeView(QWidget):
         painter.begin(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.fillRect(event.rect(), self.palette().window())
-        for item in self.iterItems():
+        for item in self.iterVisibleItems():
             item.draw(painter)
         painter.end()
