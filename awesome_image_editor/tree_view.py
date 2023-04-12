@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from PyQt6.QtCore import QPoint, QRect, QRectF, QSize, Qt
-from PyQt6.QtGui import QBrush, QIcon, QMouseEvent, QPainter, QPaintEvent, QPixmap, QResizeEvent, QWheelEvent
+from PyQt6.QtCore import QPoint, QRect, QSize, Qt
+from PyQt6.QtGui import QBrush, QIcon, QMouseEvent, QPainter, QPaintEvent, QPixmap, QResizeEvent, QWheelEvent, QPalette
 from PyQt6.QtWidgets import QApplication, QWidget
 
+from awesome_image_editor.layers import Layer
 from awesome_image_editor.project_model import ProjectModel
 
 THUMBNAIL_SIZE = QSize(64, 64)
@@ -43,6 +44,89 @@ def clamp(value, lower, upper):
     return value
 
 
+class TreeViewItem:
+    def __init__(self, x: int, y: int, layer: Layer, width: int, height: int, palette: QPalette):
+        self.x = x
+        self.y = y
+        self.layer = layer
+        self.width = width
+        self.height = height
+        self.palette = palette
+
+    def containsYPos(self, y: float):
+        return self.y < y < (self.y + self.height)
+
+    def eyeIconRect(self):
+        return QRect(
+            self.x + MARGIN,
+            self.y + self.height // 2 - EYE_ICON_HEIGHT // 2,
+            EYE_ICON_WIDTH,
+            EYE_ICON_HEIGHT,
+        )
+
+    def thumbnailRect(self):
+        return QRect(
+            self.x + MARGIN + EYE_ICON_WIDTH + MARGIN,
+            self.y,
+            THUMBNAIL_SIZE.width(),
+            THUMBNAIL_SIZE.height(),
+        )
+
+    def layerNameRect(self):
+        return QRect(
+            self.x + MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
+            self.y,
+            self.width,
+            self.height,
+        )
+
+    def rect(self):
+        return QRect(self.x, self.y, self.width, self.height)
+
+    def drawBackground(self, painter: QPainter):
+        if self.layer.isSelected:
+            painter.fillRect(self.rect(), self.palette.highlight())
+
+    def drawEyeIcon(self, painter: QPainter):
+        if self.layer.isSelected:
+            eyeIconPixmap = ICON_HIDDEN_HIGHLIGHT_PIXMAP if self.layer.isHidden else ICON_VISIBLE_HIGHLIGHT_PIXMAP
+        else:
+            eyeIconPixmap = ICON_HIDDEN_PIXMAP if self.layer.isHidden else ICON_VISIBLE_PIXMAP
+
+        painter.drawPixmap(self.eyeIconRect(), eyeIconPixmap)
+
+    def drawThumbnail(self, painter: QPainter):
+        layerSize = self.layer.size()
+
+        if layerSize.width() == 0:
+            return
+
+        thumbnailRect = self.thumbnailRect()
+        scaledSize = layerSize.scaled(THUMBNAIL_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
+        painter.save()
+        painter.translate(
+            thumbnailRect.center().x() - scaledSize.width() / 2,
+            thumbnailRect.center().y() - scaledSize.height() / 2,
+        )
+        scale = scaledSize.width() / layerSize.width()
+        painter.scale(scale, scale)
+        self.layer.draw(painter)
+        painter.restore()
+
+    def drawName(self, painter: QPainter):
+        painter.save()
+        if self.layer.isSelected:
+            painter.setPen(self.palette.highlightedText().color())
+        painter.drawText(self.layerNameRect(), Qt.AlignmentFlag.AlignVCenter, self.layer.name)
+        painter.restore()
+
+    def draw(self, painter: QPainter):
+        self.drawBackground(painter)
+        self.drawEyeIcon(painter)
+        self.drawThumbnail(painter)
+        self.drawName(painter)
+
+
 class TreeView(QWidget):
     def __init__(self, project: ProjectModel):
         super().__init__()
@@ -60,6 +144,15 @@ class TreeView(QWidget):
         project.layersOrderChanged.connect(lambda: self.update())
         project.layersVisibilityChanged.connect(lambda: self.update())
         project.layersSelectionChanged.connect(lambda: self.update())
+
+    def iterItems(self):
+        x = 0
+        y = -1 * self._scrollPos
+        # TODO: recursively return items (when layer groups or child layers are implemented)
+        for layer in self.project.iterLayersFrontToBack():
+            item = TreeViewItem(x, y, layer, self.width(), THUMBNAIL_SIZE.height(), self.palette())
+            yield item
+            y += item.height
 
     @property
     def project(self):
@@ -102,7 +195,7 @@ class TreeView(QWidget):
         if not numPixels.isNull():
             scrollDelta = numPixels.y()
         else:
-            scrollDelta = (angleDelta.y() / 15) * 4
+            scrollDelta = (angleDelta.y() // 15) * 4
 
         if self.height() < self.calcItemsScreenHeight():
             # Only scroll if height is not enough to display all items
@@ -111,28 +204,19 @@ class TreeView(QWidget):
         event.accept()
 
     def findItemUnderPosition(self, pos: QPoint):
-        y = -self._scrollPos
-        x = 0
-        for layer in self._project.iterLayersFrontToBack():
-            if y < pos.y() < (y + THUMBNAIL_SIZE.height()):
-                eyeIconRect = QRectF(
-                    x + MARGIN,
-                    y + THUMBNAIL_SIZE.height() / 2 - EYE_ICON_HEIGHT / 2,
-                    EYE_ICON_WIDTH,
-                    EYE_ICON_HEIGHT,
-                )
-                layerUnderMouse = layer
-                return layerUnderMouse, eyeIconRect
-            y += THUMBNAIL_SIZE.height()
-
-        return None, None
+        for item in self.iterItems():
+            if item.containsYPos(pos.y()):
+                return item
+        return None
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        layer, eyeIconRect = self.findItemUnderPosition(event.position())
-        if layer is None:
+        itemUnderMouse = self.findItemUnderPosition(event.pos())
+        if itemUnderMouse is None:
             return
 
-        if eyeIconRect.contains(event.position()):
+        layer = itemUnderMouse.layer
+
+        if itemUnderMouse.eyeIconRect().contains(event.pos()):
             # Toggle hidden state
             layer.isHidden = not layer.isHidden
             self.project.layersVisibilityChanged.emit()
@@ -150,73 +234,8 @@ class TreeView(QWidget):
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
-
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-
         painter.fillRect(event.rect(), self.palette().window())
-        painter.save()
-
-        painter.translate(0, -1 * self._scrollPos)
-
-        x = 0
-        y = 0
-
-        for layer in self._project.iterLayersFrontToBack():
-            treeItemRect = QRect(x, y, self.size().width(), THUMBNAIL_SIZE.height())
-
-            if layer.isSelected:
-                painter.fillRect(treeItemRect, self.palette().highlight())
-
-            eyeIconRect = QRect(
-                x + MARGIN,
-                y + THUMBNAIL_SIZE.height() // 2 - EYE_ICON_HEIGHT // 2,
-                EYE_ICON_WIDTH,
-                EYE_ICON_HEIGHT,
-            )
-
-            # Determine eye icon based on hide and selection states of the layer
-            if layer.isSelected:
-                eyeIconPixmap = ICON_HIDDEN_HIGHLIGHT_PIXMAP if layer.isHidden else ICON_VISIBLE_HIGHLIGHT_PIXMAP
-            else:
-                eyeIconPixmap = ICON_HIDDEN_PIXMAP if layer.isHidden else ICON_VISIBLE_PIXMAP
-
-            painter.drawPixmap(eyeIconRect, eyeIconPixmap)
-
-            layerSize = layer.size()
-
-            if layerSize.width() > 0:
-                thumbnailRect = QRectF(
-                    x + MARGIN + EYE_ICON_WIDTH + MARGIN,
-                    y,
-                    THUMBNAIL_SIZE.width(),
-                    THUMBNAIL_SIZE.height(),
-                )
-
-                scaledSize = layerSize.scaled(THUMBNAIL_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
-
-                painter.save()
-                painter.translate(
-                    thumbnailRect.center().x() - scaledSize.width() / 2,
-                    thumbnailRect.center().y() - scaledSize.height() / 2,
-                )
-                scale = scaledSize.width() / layerSize.width()
-                painter.scale(scale, scale)
-                layer.draw(painter)
-                painter.restore()
-
-            layerNameRect = QRect(
-                x + MARGIN + EYE_ICON_WIDTH + MARGIN + THUMBNAIL_SIZE.width() + MARGIN,
-                y,
-                self.size().width(),
-                THUMBNAIL_SIZE.height(),
-            )
-            painter.save()
-            if layer.isSelected:
-                painter.setPen(QApplication.palette().highlightedText().color())
-            painter.drawText(layerNameRect, Qt.AlignmentFlag.AlignVCenter, layer.name)
-            painter.restore()
-
-            y += THUMBNAIL_SIZE.height()
-
-        painter.restore()
+        for item in self.iterItems():
+            item.draw(painter)
         painter.end()
