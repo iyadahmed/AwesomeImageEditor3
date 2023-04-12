@@ -11,6 +11,7 @@ ICON_LAYERS = QIcon((Path(__file__).parent / "icons/layers/layers_dialog.svg").a
 ICON_DELETE = QIcon((Path(__file__).parent / "icons/layers/delete_btn.svg").as_posix())
 ICON_LOWER = QIcon((Path(__file__).parent / "icons/layers/lower_layer_onestep.svg").as_posix())
 ICON_RAISE = QIcon((Path(__file__).parent / "icons/layers/raise_layer_onestep.svg").as_posix())
+FILEPATH_ICON_UNSPREAD_LEFT = (Path(__file__).parent / 'icons/layers/unspread_left.svg').as_posix()
 
 
 class LayersToolbar(QToolBar):
@@ -19,9 +20,18 @@ class LayersToolbar(QToolBar):
         self._project = project
 
         self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.addAction(ICON_DELETE, "Delete", self.onIconDeletePress)
-        self.addAction(ICON_RAISE, "Raise", self.onIconRaisePress)
         self.addAction(ICON_LOWER, "Lower", self.onIconLowerPress)
+        self.addAction(ICON_RAISE, "Raise", self.onIconRaisePress)
+        self.addAction(ICON_DELETE, "Delete", self.onIconDeletePress)
+
+        # Styling QToolBar extension button
+        # https://stackoverflow.com/a/30718289/8094047
+        # https://bugreports.qt.io/browse/QTBUG-64527?attachmentSortBy=dateTime
+        self.setStyleSheet(
+            "QToolBarExtension {"
+            f"qproperty-icon: url({FILEPATH_ICON_UNSPREAD_LEFT});"
+            "}"
+        )
 
     def onIconDeletePress(self):
         self._project.deleteSelected()
