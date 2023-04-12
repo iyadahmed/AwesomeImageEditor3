@@ -171,7 +171,7 @@ class TreeView(QWidget):
     def calcItemsScreenHeight(self):
         # TODO: change this logic when we have groups (layers is not a list anymore but a tree),
         #       or when items have different height
-        return sum(THUMBNAIL_SIZE.height() for _ in self._project.iterLayersFrontToBack())
+        return sum(item.height for item in self.iterItems())
 
     def calcMaxScrollPos(self):
         """Calculate the scroll position needed to make the very bottom item visible without excess,
