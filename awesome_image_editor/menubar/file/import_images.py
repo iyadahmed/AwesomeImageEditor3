@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
 
-from PyQt6.QtWidgets import QWidget, QFileDialog, QProgressDialog, QMessageBox
-from PyQt6.QtCore import QStandardPaths, QTimer, Qt
+from PyQt6.QtCore import QStandardPaths, Qt, QTimer
 from PyQt6.QtGui import QImage
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QProgressDialog, QWidget
 
-from awesome_image_editor.project_model import ProjectModel
 from awesome_image_editor.layers import ImageLayer
+from awesome_image_editor.project_model import ProjectModel
 
 
 def importImages(parent: QWidget, project: ProjectModel):

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QToolBar
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QToolBar, QVBoxLayout, QWidget
 
 from awesome_image_editor.project_model import ProjectModel
 from awesome_image_editor.tree_view import TreeView

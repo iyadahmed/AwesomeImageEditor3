@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from PyQt6.QtCore import QSize, pyqtSignal, QObject
+from PyQt6.QtCore import QObject, QSize, pyqtSignal
 
 from awesome_image_editor.layers import Layer
 

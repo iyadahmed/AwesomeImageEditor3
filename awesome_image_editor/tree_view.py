@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from PyQt6.QtCore import QPoint, QPointF, QRect, QRectF, QSize, Qt, pyqtSignal
-from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QWheelEvent, QResizeEvent, QIcon
-from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtCore import QPoint, QRect, QRectF, QSize, Qt
+from PyQt6.QtGui import QBrush, QIcon, QMouseEvent, QPainter, QPaintEvent, QPixmap, QResizeEvent, QWheelEvent
 from PyQt6.QtWidgets import QApplication, QWidget
 
 from awesome_image_editor.project_model import ProjectModel
@@ -24,11 +23,13 @@ def getTintedPixmap(pixmap: QPixmap, tint: Optional[QBrush]):
 
 
 ICON_HIDDEN_PIXMAP = QIcon((Path(__file__).parent / "icons/layers/hidden.svg").as_posix()).pixmap(
-    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
+    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT)
+)
 ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, QApplication.palette().highlightedText())
 
 ICON_VISIBLE_PIXMAP = QIcon((Path(__file__).parent / "icons/layers/visible.svg").as_posix()).pixmap(
-    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
+    QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT)
+)
 ICON_VISIBLE_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_VISIBLE_PIXMAP, QApplication.palette().highlightedText())
 
 
@@ -81,7 +82,7 @@ class TreeView(QWidget):
 
     def calcMaxScrollPos(self):
         """Calculate the scroll position needed to make the very bottom item visible without excess,
-        if the widget height is already enough to display all items it returns 0 (no need to scroll) """
+        if the widget height is already enough to display all items it returns 0 (no need to scroll)"""
         if self.height() >= self.calcItemsScreenHeight():
             return 0
         return self.calcItemsScreenHeight() - self.height()

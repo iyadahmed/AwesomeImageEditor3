@@ -3,8 +3,8 @@ from PyQt6.QtWidgets import QMainWindow, QSplitter
 
 from awesome_image_editor.canvas_view import CanvasView
 from awesome_image_editor.layers_widget import LayersWidget
-from awesome_image_editor.project_model import ProjectModel
 from awesome_image_editor.menubar.file.import_images import importImages
+from awesome_image_editor.project_model import ProjectModel
 
 
 class MainWindow(QMainWindow):
