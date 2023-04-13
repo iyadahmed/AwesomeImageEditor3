@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         toolsToolBar.setStyleSheet(
             f"QToolBar::handle::vertical {{image: url({FILEPATH_ICON_HANDLE_VERTICAL});}}"
             f"QToolBar::handle::horizontal {{image: url({FILEPATH_ICON_HANDLE_HORIZONTAL})}}"
+            "QToolBar {border: 0px;}"
         )
         # TODO: move tool functionality
         toolsToolBar.addAction(ICON_MOVE, "Move", lambda: ...)
