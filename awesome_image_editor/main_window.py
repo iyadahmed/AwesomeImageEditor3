@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QActionGroup, QAction
 from PyQt6.QtWidgets import QMainWindow, QSplitter, QToolBar
 
 from awesome_image_editor.canvas_view import CanvasView
@@ -39,8 +39,16 @@ class MainWindow(QMainWindow):
             f"QToolBar::handle::horizontal {{image: url({FILEPATH_ICON_HANDLE_HORIZONTAL})}}"
             "QToolBar {border: 0px;}"
         )
+        toolsActionGroup = QActionGroup(self)
+        toolsActionGroup.setExclusive(True)
+
         # TODO: move tool functionality
-        toolsToolBar.addAction(ICON_MOVE, "Move", lambda: ...)
+        moveAction = QAction(ICON_MOVE, "Move", self)
+        moveAction.setCheckable(True)
+        moveAction.setChecked(True)
+        toolsActionGroup.addAction(moveAction)
+        toolsToolBar.addAction(moveAction)
+
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, toolsToolBar)
 
         self.createMenus()
