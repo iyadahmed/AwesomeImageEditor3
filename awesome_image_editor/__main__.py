@@ -1,10 +1,12 @@
 import ctypes
 import platform
 import sys
-from pathlib import Path, PurePath
+from pathlib import Path
 
-from PyQt6.QtGui import QColor, QFontDatabase, QIcon, QPalette
+from PyQt6.QtGui import QColor, QFontDatabase, QPalette
 from PyQt6.QtWidgets import QApplication
+
+from awesome_image_editor.icons import getIcon
 
 app = QApplication(sys.argv)
 
@@ -22,7 +24,7 @@ if platform.system() == "Windows":
     appID = "AwesomeImageEditor.AwesomeImageEditor"
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # noqa
 
-app.setWindowIcon(QIcon((PurePath(__file__).parent / "icons" / "app2.svg").as_posix()))
+app.setWindowIcon(getIcon("app2.svg"))
 
 # Dark theme + modifications by @alezzacreative (Twitter, GitHub)
 # https://stackoverflow.com/a/56851493/8094047

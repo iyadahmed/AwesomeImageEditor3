@@ -1,11 +1,9 @@
-from pathlib import Path
-
-from PyQt6.QtGui import QIcon, QActionGroup, QAction
+from PyQt6.QtGui import QActionGroup, QAction
 from PyQt6.QtWidgets import QWidget, QToolBar
 
-ICON_MOVE = QIcon((Path(__file__).parent.parent / "icons/tools/tool_move.svg").as_posix())
-FILEPATH_ICON_HANDLE_VERTICAL = (Path(__file__).parent.parent / 'icons/tools/handle_vertical.svg').as_posix()
-FILEPATH_ICON_HANDLE_HORIZONTAL = (Path(__file__).parent.parent / 'icons/tools/handle_horizontal.svg').as_posix()
+from awesome_image_editor.icons import getFullIconPath, getIcon
+
+ICON_MOVE = getIcon("tools/tool_move.svg")
 
 
 class ToolsToolbar(QToolBar):
@@ -13,8 +11,8 @@ class ToolsToolbar(QToolBar):
         super().__init__("Tools", parent)
 
         self.setStyleSheet(
-            f"QToolBar::handle::vertical {{image: url({FILEPATH_ICON_HANDLE_VERTICAL});}}"
-            f"QToolBar::handle::horizontal {{image: url({FILEPATH_ICON_HANDLE_HORIZONTAL})}}"
+            f"QToolBar::handle::vertical {{image: url({getFullIconPath('tools/handle_vertical.svg')});}}"
+            f"QToolBar::handle::horizontal {{image: url({getFullIconPath('tools/handle_horizontal.svg')})}}"
             "QToolBar {border: 0px;}"
         )
         toolsActionGroup = QActionGroup(self)

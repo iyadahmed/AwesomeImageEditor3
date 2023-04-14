@@ -1,17 +1,14 @@
-from pathlib import Path
-
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QToolBar, QVBoxLayout, QWidget
 
+from awesome_image_editor.icons import getFullIconPath, getIcon
 from awesome_image_editor.project_model import ProjectModel
 from awesome_image_editor.tree_view import TreeView
 
-ICON_LAYERS = QIcon((Path(__file__).parent / "icons/layers/layers_dialog.svg").as_posix())
-ICON_DELETE = QIcon((Path(__file__).parent / "icons/layers/delete_btn.svg").as_posix())
-ICON_LOWER = QIcon((Path(__file__).parent / "icons/layers/lower_layer_onestep.svg").as_posix())
-ICON_RAISE = QIcon((Path(__file__).parent / "icons/layers/raise_layer_onestep.svg").as_posix())
-FILEPATH_ICON_UNSPREAD_LEFT = (Path(__file__).parent / 'icons/layers/unspread_left.svg').as_posix()
+ICON_LAYERS = getIcon("layers/layers_dialog.svg")
+ICON_DELETE = getIcon("layers/delete_btn.svg")
+ICON_LOWER = getIcon("layers/lower_layer_onestep.svg")
+ICON_RAISE = getIcon("layers/raise_layer_onestep.svg")
 
 
 class LayersToolbar(QToolBar):
@@ -29,7 +26,7 @@ class LayersToolbar(QToolBar):
         # https://bugreports.qt.io/browse/QTBUG-64527?attachmentSortBy=dateTime
         self.setStyleSheet(
             "QToolBarExtension {"
-            f"qproperty-icon: url({FILEPATH_ICON_UNSPREAD_LEFT});"
+            f"qproperty-icon: url({getFullIconPath('layers/unspread_left.svg')});"
             "}"
         )
 
