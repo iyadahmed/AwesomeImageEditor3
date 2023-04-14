@@ -242,7 +242,7 @@ class TreeView(QWidget):
         painter = QPainter()
         painter.begin(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        painter.fillRect(event.rect(), self.palette().window())
+        painter.fillRect(event.rect(), self.palette().base())
         for item in self.iterVisibleItems():
             item.draw(painter)
         painter.end()
