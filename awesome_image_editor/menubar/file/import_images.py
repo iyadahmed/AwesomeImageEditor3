@@ -58,6 +58,7 @@ def importImages(parent: QWidget, project: ProjectModel):
         if fileName is None:
             # No more images to load
             finish()
+            return
 
         progressDialog.setLabelText(f"Loading image: {fileName}")
         image = QImage(fileName)
