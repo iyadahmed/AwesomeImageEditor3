@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, QPoint
 from PyQt6.QtGui import QImage, QPainter
 
 
@@ -10,6 +10,7 @@ class Layer(ABC):
         self.isHidden = False
         self.isSelected = False
         self.name = ""
+        self.location = QPoint(0, 0)
 
     @abstractmethod
     def draw(self, painter: QPainter):

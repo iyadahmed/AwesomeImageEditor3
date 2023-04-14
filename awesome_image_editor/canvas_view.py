@@ -1,4 +1,5 @@
 from operator import sub
+from typing import Optional
 
 from PyQt6.QtCore import QPoint, QSize, Qt
 from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, QTransform, QWheelEvent
@@ -35,6 +36,8 @@ class CanvasView(QWidget):
         project.layersOrderChanged.connect(onLayersModify)
         project.layersVisibilityChanged.connect(onLayersModify)
 
+        self._lastMousePos: Optional[QPoint] = None
+
     @property
     def canvasSize(self):
         return self._project.canvasSize
@@ -51,6 +54,7 @@ class CanvasView(QWidget):
             if layer.isHidden:
                 continue
             painter.save()
+            painter.translate(layer.location)
             layer.draw(painter)
             painter.restore()
 
@@ -118,12 +122,29 @@ class CanvasView(QWidget):
         self._isPanning = False
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        if (event.buttons() & Qt.MouseButton.LeftButton) and self._isSpaceBarHeld:
-            self.panStart(event.pos())
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            if self._isSpaceBarHeld:
+                self.panStart(event.pos())
+            else:
+                canvasInverseTransform = self._transform.inverted()[0]
+                self._lastMousePos = canvasInverseTransform.map(event.pos())
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self._isPanning:
             self.panMove(event.pos())
+
+        elif self._lastMousePos is not None:
+            canvasInverseTransform = self._transform.inverted()[0]
+            currentMousePos = canvasInverseTransform.map(event.pos())
+            delta = currentMousePos - self._lastMousePos
+            self._lastMousePos = currentMousePos
+
+            for layer in self._project.iterLayersBackToFront():
+                if layer.isSelected:
+                    layer.location += delta
+
+            self.repaintCache()
+            self.update()
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if self._isPanning:
