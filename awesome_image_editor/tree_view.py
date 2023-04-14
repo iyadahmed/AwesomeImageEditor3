@@ -1,27 +1,17 @@
-from typing import Optional, Union
+from typing import Union
 
 from PyQt6.QtCore import QPoint, QRect, QSize, Qt
-from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QResizeEvent, QWheelEvent, QPalette
+from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent, QPalette
 from PyQt6.QtWidgets import QApplication, QWidget
 
 from awesome_image_editor.icons import getIcon
 from awesome_image_editor.layers import Layer
+from awesome_image_editor.pixmap_utils import getTintedPixmap
 from awesome_image_editor.project_model import ProjectModel
 
 THUMBNAIL_SIZE = QSize(64, 64)
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 5
-
-
-def getTintedPixmap(pixmap: QPixmap, tint: Optional[QBrush]):
-    tintedPixmap = pixmap.copy()
-    painter = QPainter()
-    painter.begin(tintedPixmap)
-    painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
-    painter.fillRect(tintedPixmap.rect(), tint)
-    painter.end()
-    return tintedPixmap
-
 
 ICON_HIDDEN_PIXMAP = getIcon("layers/hidden.svg").pixmap(QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
 ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, QApplication.palette().highlightedText())

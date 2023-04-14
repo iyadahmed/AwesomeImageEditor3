@@ -1,20 +1,18 @@
+from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QActionGroup, QAction
-from PyQt6.QtWidgets import QWidget, QToolBar
+from PyQt6.QtWidgets import QWidget
 
-from awesome_image_editor.icons import getFullIconPath, getIcon
-
-ICON_MOVE = getIcon("tools/tool_move.svg")
+from awesome_image_editor.toolbar import ToolBar
 
 
-class ToolsToolbar(QToolBar):
+class ToolsToolbar(ToolBar):
     def __init__(self, parent: QWidget):
         super().__init__("Tools", parent)
 
-        self.setStyleSheet(
-            f"QToolBar::handle::vertical {{image: url({getFullIconPath('tools/handle_vertical.svg')});}}"
-            f"QToolBar::handle::horizontal {{image: url({getFullIconPath('tools/handle_horizontal.svg')})}}"
-            "QToolBar {border: 0px;}"
-        )
+        self.setIconSize(QSize(24, 24))
+        ICON_MOVE = self.getTintedIcon("tools/tool_move.svg")
+        ICON_CROP = self.getTintedIcon("tools/tool_crop.svg")
+
         toolsActionGroup = QActionGroup(self)
         toolsActionGroup.setExclusive(True)
 
@@ -24,3 +22,8 @@ class ToolsToolbar(QToolBar):
         moveAction.setChecked(True)
         toolsActionGroup.addAction(moveAction)
         self.addAction(moveAction)
+
+        cropAction = QAction(ICON_CROP, "Crop", self)
+        cropAction.setCheckable(True)
+        toolsActionGroup.addAction(cropAction)
+        self.addAction(cropAction)
