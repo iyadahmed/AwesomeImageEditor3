@@ -50,7 +50,7 @@ def importImages(parent: QWidget, project: ProjectModel):
                 "Some images failed to load:\n" + "\n".join(failedFileNames),
             )
 
-    def importImage():
+    def importSingleImage():
         nonlocal progress
         progressDialog.setValue(progress)
         progress += 1
@@ -70,5 +70,5 @@ def importImages(parent: QWidget, project: ProjectModel):
         importedLayers.append(layer)
 
     # progressDialog.canceled.connect(finish)  # In case we want to make it cancellable later
-    timer.timeout.connect(importImage)
+    timer.timeout.connect(importSingleImage)
     timer.start(0)
