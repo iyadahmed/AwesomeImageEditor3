@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from PyQt6.QtCore import QPoint, QRect, QSize, Qt, QMargins
+from PyQt6.QtCore import QPoint, QRect, QSize, Qt
 from PyQt6.QtGui import QBrush, QMouseEvent, QPainter, QPaintEvent, QPixmap, QResizeEvent, QWheelEvent, QPalette
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -83,7 +83,7 @@ class TreeViewItem:
         if self.layer.isSelected:
             # Background rectangle is expanded by 1 pixel to ensure no gaps due to implicit conversion to QRectF when
             # passed to fillRect
-            painter.fillRect(self.rect().marginsAdded(QMargins(1, 1, 1, 1)), self.palette.highlight())
+            painter.fillRect(self.rect(), self.palette.highlight())
 
     def drawEyeIcon(self, painter: QPainter):
         if self.layer.isSelected:
@@ -241,7 +241,8 @@ class TreeView(QWidget):
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
         painter.fillRect(event.rect(), self.palette().base())
         for item in self.iterVisibleItems():
             item.draw(painter)
