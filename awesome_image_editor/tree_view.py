@@ -210,26 +210,63 @@ class TreeView(QWidget):
                 return item
         return None
 
+    def selectRange(self, first: Layer, last: Layer):
+        if first == last:
+            first.isSelected = True
+            return
+        # Algorithm for selecting a range of layers
+        # based on an active layer and a layer under mouse in a list view of layers:
+        #   1. Iterate over layers until we find either the active layer or the layer under mouse
+        #   2. Once we hit that we start selecting all layers as we continue iteration
+        #   3. Until we hit either the layer under mouse or the active layer, when we do so we break
+        # Notes:
+        #   If the check in step 1 was true because the active layer was encountered
+        #   then in step 3 we should encounter the layer under mouse and not the active layer,
+        #   and vice versa,
+        #   unless both layers are the same (in this case only a single layer should be selected
+        #   and the user has Shift-Clicked the active layer itself)
+        # TODO: refactor
+        doSelection = False
+        for layer in self.project.iterLayersFrontToBack():
+            if doSelection:
+                layer.isSelected = True
+            if layer == first or layer == last:
+                if doSelection:
+                    break
+                else:
+                    # Start selection
+                    doSelection = True
+                    layer.isSelected = True
+
     def mousePressEvent(self, event: QMouseEvent) -> None:
         itemUnderMouse = self.findItemUnderPosition(event.pos())
         if itemUnderMouse is None:
             return
 
-        layer = itemUnderMouse.layer
+        layerUnderMouse = itemUnderMouse.layer
 
         if itemUnderMouse.eyeIconRect().contains(event.pos()):
             # Toggle hidden state
-            layer.isHidden = not layer.isHidden
+            layerUnderMouse.isHidden = not layerUnderMouse.isHidden
             self.project.layersVisibilityChanged.emit()
         else:
+            # TODO: refactor
             if event.buttons() & Qt.MouseButton.LeftButton:
                 if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-                    layer.isSelected = not layer.isSelected
-                    self.project.activeLayer = layer if layer.isSelected else None
+                    if (not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier)) or (
+                            self.project.activeLayer is None):
+                        layerUnderMouse.isSelected = not layerUnderMouse.isSelected
+                        self.project.activeLayer = layerUnderMouse if layerUnderMouse.isSelected else None
+                    else:
+                        self.selectRange(self.project.activeLayer, layerUnderMouse)
                 else:
                     self._project.deselectAll()
-                    layer.isSelected = True
-                    self.project.activeLayer = layer
+                    if (not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier)) or (
+                            self.project.activeLayer is None):
+                        layerUnderMouse.isSelected = True
+                        self.project.activeLayer = layerUnderMouse
+                    else:
+                        self.selectRange(self.project.activeLayer, layerUnderMouse)
                 self.project.layersSelectionChanged.emit()
 
         event.accept()
