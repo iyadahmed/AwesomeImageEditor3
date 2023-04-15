@@ -14,8 +14,8 @@ class ProjectModel(QObject):
     layersVisibilityChanged = pyqtSignal()
     layersSelectionChanged = pyqtSignal()
 
-    def __init__(self, canvasSize: QSize):
-        super().__init__()
+    def __init__(self, parent: QObject, canvasSize: QSize):
+        super().__init__(parent)
         self._layers: list[Layer] = []
         self._canvasSize = canvasSize
 

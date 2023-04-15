@@ -38,18 +38,18 @@ class LayerOperationsToolBar(ToolBar):
 class LayersWidget(QWidget):
     def __init__(self, parent: QWidget, project: ProjectModel):
         super().__init__(parent)
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        titleLayout = QHBoxLayout()
+        titleLayout = QHBoxLayout(self)
         titleLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        titleIconLabel = QLabel()
+        titleIconLabel = QLabel(self)
         titleIconLabel.setPixmap(getIcon("layers/layers_dialog.svg").pixmap(QSize(24, 24)))
         titleLayout.addWidget(titleIconLabel)
-        titleLabel = QLabel("Layers")
+        titleLabel = QLabel("Layers", self)
         titleLayout.addWidget(titleLabel)
 
         layout.addLayout(titleLayout)
-        layout.addWidget(TreeView(project), stretch=1)
+        layout.addWidget(TreeView(self, project), stretch=1)
         layout.addWidget(LayerOperationsToolBar(self, project))

@@ -117,8 +117,8 @@ class TreeViewItem:
 
 
 class TreeView(QWidget):
-    def __init__(self, project: ProjectModel):
-        super().__init__()
+    def __init__(self, parent: QWidget, project: ProjectModel):
+        super().__init__(parent)
         self._project = project
 
         self._scrollPos = 0

@@ -12,16 +12,16 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.project = ProjectModel(QSize(1920, 1080))
+        self.project = ProjectModel(self, QSize(1920, 1080))
 
-        splitter = QSplitter()
+        splitter = QSplitter(self)
         self.setStyleSheet(
             "QSplitter::handle {background: palette(window);}"
             "QSplitter::handle:hover {background: palette(highlight);}"
         )
         self.setCentralWidget(splitter)
 
-        canvasWidget = CanvasView(self.project)
+        canvasWidget = CanvasView(self, self.project)
         layersWidget = LayersWidget(self, self.project)
         splitter.addWidget(canvasWidget)
         splitter.addWidget(layersWidget)
