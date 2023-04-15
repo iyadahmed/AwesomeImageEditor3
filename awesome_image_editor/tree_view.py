@@ -1,7 +1,7 @@
 from typing import Union
 
 from PyQt6.QtCore import QPoint, QRect, QSize, Qt, QMargins
-from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent, QPalette
+from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent, QPalette, QPen
 from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.icons import getIcon
@@ -14,6 +14,10 @@ THUMBNAIL_SIZE = QSize(64, 64)
 THUMBNAIL_PADDING = 3
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 5
+
+# Pen width of 0 means "cosmetic pen" or a very thin pen
+ACTIVE_LAYER_BOX_PEN = QPen(AIE_PALETTE.highlightedText().color(), 0, Qt.PenStyle.SolidLine, Qt.PenCapStyle.FlatCap,
+                            Qt.PenJoinStyle.MiterJoin)
 
 ICON_HIDDEN_PIXMAP = getIcon("layers/hidden.svg").pixmap(QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
 ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, AIE_PALETTE.highlightedText())
@@ -242,7 +246,8 @@ class TreeView(QWidget):
             # Draw box around "active" layer
             if (self.project.activeLayer is not None) and (item.layer == self.project.activeLayer):
                 painter.save()
-                painter.setPen(self.palette().highlightedText().color())
-                painter.drawRect(item.rect())
+                painter.setPen(ACTIVE_LAYER_BOX_PEN)
+                # Margins are remove from bounding box to make sure box is not obscured by widget's borders
+                painter.drawRect(item.rect().marginsRemoved(QMargins(1, 1, 1, 1)))
                 painter.restore()
         painter.end()
