@@ -7,6 +7,10 @@ from PyQt6.QtWidgets import QToolBar, QWidget, QProxyStyle, QStyle, QStyleOption
 from awesome_image_editor.icons import getIcon, getFullIconPath
 from awesome_image_editor.pixmap_utils import getTintedPixmap
 
+ICON_TOOLBAR_EXTENSION_HORIZONTAL_RTL = getIcon("toolbar/extension_horizontal_rtl.svg")
+ICON_TOOLBAR_EXTENSION_HORIZONTAL = getIcon("toolbar/extension_horizontal.svg")
+ICON_TOOLBAR_EXTENSION_VERTICAL = getIcon("toolbar/extension_vertical.svg")
+
 
 class ToolBarStyle(QProxyStyle):
     def standardIcon(self, standardIcon: QStyle.StandardPixmap, option: Optional[QStyleOption] = ...,
@@ -15,12 +19,12 @@ class ToolBarStyle(QProxyStyle):
         # based on: https://forum.qt.io/post/622513
         if standardIcon == QStyle.StandardPixmap.SP_ToolBarHorizontalExtensionButton:
             if option.direction == Qt.LayoutDirection.RightToLeft:
-                return getIcon("toolbar/extension_horizontal_rtl.svg")
+                return ICON_TOOLBAR_EXTENSION_HORIZONTAL_RTL
             else:
-                return getIcon("toolbar/extension_horizontal.svg")
+                return ICON_TOOLBAR_EXTENSION_HORIZONTAL
 
         elif standardIcon == QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton:
-            return getIcon("toolbar/extension_vertical.svg")
+            return ICON_TOOLBAR_EXTENSION_VERTICAL
 
         return super().standardIcon(standardIcon, option, widget)
 
