@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(splitter)
 
         canvasWidget = CanvasView(self.project)
-        layersWidget = LayersWidget(self.project)
+        layersWidget = LayersWidget(self, self.project)
         splitter.addWidget(canvasWidget)
         splitter.addWidget(layersWidget)
         splitter.setSizes([self.width() - self.width() // 5, self.width() // 5])

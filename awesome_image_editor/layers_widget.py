@@ -8,8 +8,8 @@ from awesome_image_editor.tree_view import TreeView
 
 
 class LayerOperationsToolBar(ToolBar):
-    def __init__(self, project: ProjectModel):
-        super().__init__("Layer Operations", None)
+    def __init__(self, parent: QWidget, project: ProjectModel):
+        super().__init__("Layer Operations", parent)
         self._project = project
 
         self.setIconSize(QSize(24, 24))
@@ -36,8 +36,8 @@ class LayerOperationsToolBar(ToolBar):
 
 
 class LayersWidget(QWidget):
-    def __init__(self, project: ProjectModel):
-        super().__init__()
+    def __init__(self, parent: QWidget, project: ProjectModel):
+        super().__init__(parent)
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
@@ -52,4 +52,4 @@ class LayersWidget(QWidget):
 
         layout.addLayout(titleLayout)
         layout.addWidget(TreeView(project), stretch=1)
-        layout.addWidget(LayerOperationsToolBar(project))
+        layout.addWidget(LayerOperationsToolBar(self, project))
