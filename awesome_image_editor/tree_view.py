@@ -92,8 +92,8 @@ class TreeViewItem:
         scaledSize = layerSize.scaled(THUMBNAIL_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
         painter.save()
         painter.translate(
-            thumbnailRect.center().x() - scaledSize.width() / 2,
-            thumbnailRect.center().y() - scaledSize.height() / 2,
+            thumbnailRect.x() + thumbnailRect.width() // 2 - scaledSize.width() // 2,
+            thumbnailRect.y() + thumbnailRect.height() // 2 - scaledSize.height() // 2,
         )
         scale = scaledSize.width() / layerSize.width()
         painter.scale(scale, scale)
