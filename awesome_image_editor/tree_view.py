@@ -1,6 +1,6 @@
 from typing import Union
 
-from PyQt6.QtCore import QPoint, QRect, QSize, Qt
+from PyQt6.QtCore import QPoint, QRect, QSize, Qt, QMargins
 from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent, QPalette
 from PyQt6.QtWidgets import QWidget
 
@@ -11,6 +11,7 @@ from awesome_image_editor.pixmap_utils import getTintedPixmap
 from awesome_image_editor.project_model import ProjectModel
 
 THUMBNAIL_SIZE = QSize(64, 64)
+THUMBNAIL_PADDING = 3
 EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 5
 
@@ -57,7 +58,7 @@ class TreeViewItem:
             self.y,
             THUMBNAIL_SIZE.width(),
             THUMBNAIL_SIZE.height(),
-        )
+        ).marginsRemoved(QMargins(THUMBNAIL_PADDING, THUMBNAIL_PADDING, THUMBNAIL_PADDING, THUMBNAIL_PADDING))
 
     def layerNameRect(self):
         return QRect(
@@ -89,7 +90,7 @@ class TreeViewItem:
             return
 
         thumbnailRect = self.thumbnailRect()
-        scaledSize = layerSize.scaled(THUMBNAIL_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
+        scaledSize = layerSize.scaled(thumbnailRect.size(), Qt.AspectRatioMode.KeepAspectRatio)
         painter.save()
         painter.translate(
             thumbnailRect.x() + thumbnailRect.width() // 2 - scaledSize.width() // 2,
