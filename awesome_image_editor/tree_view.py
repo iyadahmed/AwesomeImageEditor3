@@ -72,8 +72,6 @@ class TreeViewItem:
 
     def drawBackground(self, painter: QPainter):
         if self.layer.isSelected:
-            # Background rectangle is expanded by 1 pixel to ensure no gaps due to implicit conversion to QRectF when
-            # passed to fillRect
             painter.fillRect(self.rect(), self.palette.highlight())
 
     def drawEyeIcon(self, painter: QPainter):
