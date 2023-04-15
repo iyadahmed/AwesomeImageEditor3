@@ -2,10 +2,11 @@ from typing import Union
 
 from PyQt6.QtCore import QPoint, QRect, QSize, Qt
 from PyQt6.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent, QPalette
-from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.icons import getIcon
 from awesome_image_editor.layers import Layer
+from awesome_image_editor.palette import AIE_PALETTE
 from awesome_image_editor.pixmap_utils import getTintedPixmap
 from awesome_image_editor.project_model import ProjectModel
 
@@ -14,10 +15,10 @@ EYE_ICON_WIDTH = EYE_ICON_HEIGHT = 20
 MARGIN = 5
 
 ICON_HIDDEN_PIXMAP = getIcon("layers/hidden.svg").pixmap(QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
-ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, QApplication.palette().highlightedText())
+ICON_HIDDEN_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_HIDDEN_PIXMAP, AIE_PALETTE.highlightedText())
 
 ICON_VISIBLE_PIXMAP = getIcon("layers/visible.svg").pixmap(QSize(EYE_ICON_WIDTH, EYE_ICON_HEIGHT))
-ICON_VISIBLE_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_VISIBLE_PIXMAP, QApplication.palette().highlightedText())
+ICON_VISIBLE_HIGHLIGHT_PIXMAP = getTintedPixmap(ICON_VISIBLE_PIXMAP, AIE_PALETTE.highlightedText())
 
 
 def clamp(value, lower, upper):
