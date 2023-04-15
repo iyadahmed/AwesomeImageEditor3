@@ -221,9 +221,11 @@ class TreeView(QWidget):
             if event.buttons() & Qt.MouseButton.LeftButton:
                 if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
                     layer.isSelected = not layer.isSelected
+                    self.project.activeLayer = layer if layer.isSelected else None
                 else:
                     self._project.deselectAll()
                     layer.isSelected = True
+                    self.project.activeLayer = layer
                 self.project.layersSelectionChanged.emit()
 
         event.accept()
@@ -236,4 +238,11 @@ class TreeView(QWidget):
         painter.fillRect(event.rect(), self.palette().base())
         for item in self.iterVisibleItems():
             item.draw(painter)
+
+            # Draw box around "active" layer
+            if (self.project.activeLayer is not None) and (item.layer == self.project.activeLayer):
+                painter.save()
+                painter.setPen(self.palette().highlightedText().color())
+                painter.drawRect(item.rect())
+                painter.restore()
         painter.end()

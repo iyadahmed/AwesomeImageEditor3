@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 from PyQt6.QtCore import QObject, QSize, pyqtSignal
 
@@ -18,6 +18,7 @@ class ProjectModel(QObject):
         super().__init__(parent)
         self._layers: list[Layer] = []
         self._canvasSize = canvasSize
+        self.activeLayer: Optional[Layer] = None
 
     def addLayerToFront(self, layer: Layer):
         self._layers.append(layer)
