@@ -8,6 +8,21 @@ from PyQt6.QtWidgets import QWidget
 from awesome_image_editor.project_model import ProjectModel
 
 
+def createCheckerBoardTile(sideLength: int):
+    pixmap = QPixmap(sideLength, sideLength)
+    painter = QPainter()
+    painter.begin(pixmap)
+    painter.fillRect(0, 0, 8, 8, Qt.GlobalColor.white)
+    painter.fillRect(8, 8, 16, 16, Qt.GlobalColor.white)
+    painter.fillRect(8, 0, 16, 8, Qt.GlobalColor.gray)
+    painter.fillRect(0, 8, 8, 16, Qt.GlobalColor.gray)
+    painter.end()
+    return pixmap
+
+
+CHECKERBOARD_PATTERN_PIXMAP = createCheckerBoardTile(16)
+
+
 class CanvasView(QWidget):
     def __init__(self, parent: QWidget, project: ProjectModel):
         super().__init__(parent)
@@ -20,11 +35,12 @@ class CanvasView(QWidget):
         self._isPanning = False
         self._isSpaceBarHeld = False
         self._panStartPos = QPoint()
+        # TODO: get rid of panDelta
         self._panDelta = QPoint()
 
         # Cached canvas
         self._cached_canvas = QPixmap(project.canvasSize)
-        self._cached_canvas.fill(Qt.GlobalColor.transparent)
+        self.repaintCache()
 
         # Connect signals
         def onLayersModify():
@@ -68,6 +84,12 @@ class CanvasView(QWidget):
 
         if not self._cached_canvas.isNull():
             painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
+            painter.save()
+            painter.setClipRect(self._cached_canvas.rect())
+            painter.resetTransform()
+            # TODO: align top left of checkerboard pattern with top left of canvas
+            painter.drawTiledPixmap(self._cached_canvas.rect(), CHECKERBOARD_PATTERN_PIXMAP)
+            painter.restore()
             painter.drawPixmap(self._cached_canvas.rect(), self._cached_canvas)
 
         painter.end()
