@@ -38,7 +38,7 @@ class ProjectModel(QObject):
     def deleteSelected(self):
         # TODO: improve memory usage? a copy of list is made and filtered,
         #       so it uses more memory for a moment,
-        #       also it is done anyways even if there are no selected layers
+        #       also it is done anyway even if there are no selected layers
         #       but it is very fast, very usable and very interactive anyways for hundreds of layers.
         new_layers = [layer for layer in self._layers if not layer.isSelected]
         self._layers.clear()
