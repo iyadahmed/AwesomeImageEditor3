@@ -83,12 +83,14 @@ class CanvasView(QWidget):
         painter.fillRect(event.rect(), self.palette().base())
 
         if not self._cached_canvas.isNull():
-            painter.setTransform(self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y()))
+            transform = self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
+            painter.setTransform(transform)
             painter.save()
             painter.setClipRect(self._cached_canvas.rect())
             painter.resetTransform()
-            # TODO: align top left of checkerboard pattern with top left of canvas
-            painter.drawTiledPixmap(self._cached_canvas.rect(), CHECKERBOARD_PATTERN_PIXMAP)
+            translation = QPoint(int(transform.dx()), int(transform.dy()))
+            # Pattern is moved by negative translation to align top left corner with canvas's top left corner
+            painter.drawTiledPixmap(self._cached_canvas.rect(), CHECKERBOARD_PATTERN_PIXMAP, -1 * translation)
             painter.restore()
             painter.drawPixmap(self._cached_canvas.rect(), self._cached_canvas)
 
