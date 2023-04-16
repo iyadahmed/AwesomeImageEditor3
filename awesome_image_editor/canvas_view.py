@@ -86,7 +86,9 @@ class CanvasView(QWidget):
             transform = self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
             painter.setTransform(transform)
             painter.save()
+            # Transform is set before setClipRect to correctly represent the canvas rectangle when panning and zooming
             painter.setClipRect(self._cached_canvas.rect())
+            # We reset transform so that checkerboard pattern scale doesn't change when user zooms in/out
             painter.resetTransform()
             translation = QPoint(int(transform.dx()), int(transform.dy()))
             # Pattern is moved by negative translation to align top left corner with canvas's top left corner
