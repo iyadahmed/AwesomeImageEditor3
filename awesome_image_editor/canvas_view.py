@@ -39,7 +39,7 @@ class CanvasView(QWidget):
         self._panDelta = QPoint()
 
         # Cached canvas
-        self._cached_canvas = QPixmap(project.canvasSize)
+        self._cachedCanvas = QPixmap(project.canvasSize)
         self.repaintCache()
 
         # Connect signals
@@ -59,10 +59,10 @@ class CanvasView(QWidget):
         return self._project.canvasSize
 
     def repaintCache(self) -> None:
-        self._cached_canvas.fill(Qt.GlobalColor.transparent)
+        self._cachedCanvas.fill(Qt.GlobalColor.transparent)
 
         painter = QPainter()
-        painter.begin(self._cached_canvas)
+        painter.begin(self._cachedCanvas)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.save()
 
@@ -82,19 +82,19 @@ class CanvasView(QWidget):
         painter.begin(self)
         painter.fillRect(event.rect(), self.palette().base())
 
-        if not self._cached_canvas.isNull():
+        if not self._cachedCanvas.isNull():
             transform = self._transform * QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
             painter.setTransform(transform)
             painter.save()
             # Transform is set before setClipRect to correctly represent the canvas rectangle when panning and zooming
-            painter.setClipRect(self._cached_canvas.rect())
+            painter.setClipRect(self._cachedCanvas.rect())
             # We reset transform so that checkerboard pattern scale doesn't change when user zooms in/out
             painter.resetTransform()
             translation = QPoint(int(transform.dx()), int(transform.dy()))
             # Pattern is moved by negative translation to align top left corner with canvas's top left corner
-            painter.drawTiledPixmap(self._cached_canvas.rect(), CHECKERBOARD_PATTERN_PIXMAP, -1 * translation)
+            painter.drawTiledPixmap(self._cachedCanvas.rect(), CHECKERBOARD_PATTERN_PIXMAP, -1 * translation)
             painter.restore()
-            painter.drawPixmap(self._cached_canvas.rect(), self._cached_canvas)
+            painter.drawPixmap(self._cachedCanvas.rect(), self._cachedCanvas)
 
         painter.end()
 
