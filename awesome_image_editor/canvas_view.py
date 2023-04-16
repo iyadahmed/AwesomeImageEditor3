@@ -35,7 +35,6 @@ class CanvasView(QWidget):
         self._isPanning = False
         self._isSpaceBarHeld = False
         self._panStartPos = QPoint()
-        # TODO: get rid of panDelta
         self._panDelta = QPoint()
 
         # Cached canvas
