@@ -229,6 +229,30 @@ class TreeView(QWidget):
             if item.layer in (first, last):
                 break
 
+    def mouseSelectionHandler(self, event: QMouseEvent, layerUnderMouse: Layer):
+        isLeftMouse = event.buttons() & Qt.MouseButton.LeftButton
+        isCtrl = event.modifiers() & Qt.KeyboardModifier.ControlModifier
+        isShift = event.modifiers() & Qt.KeyboardModifier.ShiftModifier
+
+        if not isLeftMouse:
+            return
+
+        if not isCtrl:
+            # If control is not held don't keep previous selection
+            self._project.deselectAll()
+
+        if isShift and (self.project.activeLayer is not None):
+            self.selectRange(self.project.activeLayer, layerUnderMouse)
+            return
+
+        if isCtrl:
+            # Toggle selection
+            layerUnderMouse.isSelected = not layerUnderMouse.isSelected
+            self.project.activeLayer = layerUnderMouse if layerUnderMouse.isSelected else None
+        else:
+            layerUnderMouse.isSelected = True
+            self.project.activeLayer = layerUnderMouse
+
     def mousePressEvent(self, event: QMouseEvent) -> None:
         itemUnderMouse = self.findItemUnderPosition(event.pos())
         if itemUnderMouse is None:
@@ -241,24 +265,8 @@ class TreeView(QWidget):
             layerUnderMouse.isHidden = not layerUnderMouse.isHidden
             self.project.layersVisibilityChanged.emit()
         else:
-            # TODO: refactor
-            if event.buttons() & Qt.MouseButton.LeftButton:
-                if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-                    if (not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier)) or (
-                            self.project.activeLayer is None):
-                        layerUnderMouse.isSelected = not layerUnderMouse.isSelected
-                        self.project.activeLayer = layerUnderMouse if layerUnderMouse.isSelected else None
-                    else:
-                        self.selectRange(self.project.activeLayer, layerUnderMouse)
-                else:
-                    self._project.deselectAll()
-                    if (not (event.modifiers() & Qt.KeyboardModifier.ShiftModifier)) or (
-                            self.project.activeLayer is None):
-                        layerUnderMouse.isSelected = True
-                        self.project.activeLayer = layerUnderMouse
-                    else:
-                        self.selectRange(self.project.activeLayer, layerUnderMouse)
-                self.project.layersSelectionChanged.emit()
+            self.mouseSelectionHandler(event, layerUnderMouse)
+            self.project.layersSelectionChanged.emit()
 
         event.accept()
 
