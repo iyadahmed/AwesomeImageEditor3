@@ -214,29 +214,20 @@ class TreeView(QWidget):
         if first == last:
             first.isSelected = True
             return
-        # Algorithm for selecting a range of layers
-        # based on an active layer and a layer under mouse in a list view of layers:
-        #   1. Iterate over layers until we find either the active layer or the layer under mouse
-        #   2. Once we hit that we start selecting all layers as we continue iteration
-        #   3. Until we hit either the layer under mouse or the active layer, when we do so we break
-        # Notes:
-        #   If the check in step 1 was true because the active layer was encountered
-        #   then in step 3 we should encounter the layer under mouse and not the active layer,
-        #   and vice versa,
-        #   unless both layers are the same (in this case only a single layer should be selected
-        #   and the user has Shift-Clicked the active layer itself)
-        # TODO: refactor
-        doSelection = False
-        for layer in self.project.iterLayersFrontToBack():
-            if doSelection:
-                layer.isSelected = True
-            if layer == first or layer == last:
-                if doSelection:
-                    break
-                else:
-                    # Start selection
-                    doSelection = True
-                    layer.isSelected = True
+
+        itemIter = self.iterItems()
+
+        # Skip all item until we hit first or last layer, select that layer before breaking
+        for item in itemIter:
+            if item.layer in (first, last):
+                item.layer.isSelected = True
+                break
+
+        # Continue iteration and select all layers until we hit the other layer
+        for item in itemIter:
+            item.layer.isSelected = True
+            if item.layer in (first, last):
+                break
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         itemUnderMouse = self.findItemUnderPosition(event.pos())
