@@ -63,7 +63,6 @@ class CanvasView(QWidget):
         painter = QPainter()
         painter.begin(self._cachedCanvas)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        painter.save()
 
         for layer in self._project.iterLayersBackToFront():
             if layer.isHidden:
@@ -73,7 +72,6 @@ class CanvasView(QWidget):
             layer.draw(painter)
             painter.restore()
 
-        painter.restore()
         painter.end()
 
     def paintEvent(self, event: QPaintEvent) -> None:
