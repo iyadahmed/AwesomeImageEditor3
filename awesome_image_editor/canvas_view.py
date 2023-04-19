@@ -1,3 +1,4 @@
+from _operator import sub
 from operator import sub
 from typing import Optional
 
@@ -52,6 +53,46 @@ class CanvasView(QWidget):
         project.layersVisibilityChanged.connect(onLayersModify)
 
         self._lastMousePos: Optional[QPoint] = None
+
+    def panToolMousePress(self, event: QMouseEvent):
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            if self._isSpaceBarHeld:
+                pos = event.pos()
+                self._panStartPos = pos
+                self._isPanning = True
+                return True
+        return False
+
+    def panToolMouseMove(self, event: QMouseEvent):
+        if self._isPanning:
+            pos = event.pos()
+            self._panDelta = sub(pos, self._panStartPos)
+            self.update()
+            return True
+        return False
+
+    def panToolMouseRelease(self, event: QMouseEvent):
+        if self._isPanning:
+            self._transform *= QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
+            self._panDelta = QPoint()
+            self.update()
+            self._isPanning = False
+            return True
+        return False
+
+    def panToolKeyPress(self, event: QKeyEvent):
+        if event.key() == Qt.Key.Key_Space:
+            self.setCursor(Qt.CursorShape.OpenHandCursor)
+            self._isSpaceBarHeld = True
+            return True
+        return False
+
+    def panToolKeyRelease(self, event: QKeyEvent):
+        if event.key() == Qt.Key.Key_Space:
+            self.setCursor(Qt.CursorShape.ArrowCursor)
+            self._isSpaceBarHeld = False
+            return True
+        return False
 
     @property
     def canvasSize(self):
@@ -121,40 +162,22 @@ class CanvasView(QWidget):
         self.update()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Space:
-            self.setCursor(Qt.CursorShape.OpenHandCursor)
-            self._isSpaceBarHeld = True
+        self.panToolKeyPress(event)
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Space:
-            self.setCursor(Qt.CursorShape.ArrowCursor)
-            self._isSpaceBarHeld = False
-
-    def panStart(self, pos: QPoint):
-        self._panStartPos = pos
-        self._isPanning = True
-
-    def panMove(self, pos: QPoint):
-        self._panDelta = sub(pos, self._panStartPos)
-        self.update()
-
-    def panEnd(self):
-        self._transform *= QTransform.fromTranslate(self._panDelta.x(), self._panDelta.y())
-        self._panDelta = QPoint()
-        self.update()
-        self._isPanning = False
+        self.panToolKeyRelease(event)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.buttons() & Qt.MouseButton.LeftButton:
-            if self._isSpaceBarHeld:
-                self.panStart(event.pos())
-            else:
-                canvasInverseTransform = self._transform.inverted()[0]
-                self._lastMousePos = canvasInverseTransform.map(event.pos())
+        if self.panToolMousePress(event):
+            return
+
+        elif event.buttons() & Qt.MouseButton.LeftButton:
+            canvasInverseTransform = self._transform.inverted()[0]
+            self._lastMousePos = canvasInverseTransform.map(event.pos())
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if self._isPanning:
-            self.panMove(event.pos())
+        if self.panToolMouseMove(event):
+            return
 
         elif self._lastMousePos is not None:
             canvasInverseTransform = self._transform.inverted()[0]
@@ -170,8 +193,7 @@ class CanvasView(QWidget):
             self.update()
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        if self._isPanning:
-            self.panEnd()
+        self.panToolMouseRelease(event)
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         if event.modifiers() & Qt.KeyboardModifier.AltModifier:
