@@ -8,6 +8,6 @@ def getFullIconPath(path: str):
     return (Path(__file__).parent / path).as_posix()
 
 
-def getIcon(path: str):
+def getIcon(path: str) -> QIcon:
     """Get an icon via its relative path to the "icons" directory"""
     return QIcon(getFullIconPath(path))

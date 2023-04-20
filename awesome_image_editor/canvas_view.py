@@ -7,6 +7,7 @@ from PyQt6.QtGui import QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPixmap, 
 from PyQt6.QtWidgets import QWidget
 
 from awesome_image_editor.project_model import ProjectModel
+from awesome_image_editor.canvas_tools.canvas_toolbar import CanvasToolBar
 
 
 def createCheckerBoardTile(sideLength: int):
@@ -25,9 +26,10 @@ CHECKERBOARD_PATTERN_PIXMAP = createCheckerBoardTile(16)
 
 
 class CanvasView(QWidget):
-    def __init__(self, parent: QWidget, project: ProjectModel):
+    def __init__(self, parent: QWidget, project: ProjectModel, toolsToolBar: CanvasToolBar):
         super().__init__(parent)
         self._project = project
+        self._toolsToolBar = toolsToolBar
 
         self._transform = QTransform()
 
@@ -162,38 +164,24 @@ class CanvasView(QWidget):
         self.update()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        self.panToolKeyPress(event)
+        if not self.panToolKeyPress(event):
+            self._toolsToolBar.getCurrentTool().keyPress(event)
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
-        self.panToolKeyRelease(event)
+        if not self.panToolKeyRelease(event):
+            self._toolsToolBar.getCurrentTool().keyRelease(event)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        if self.panToolMousePress(event):
-            return
-
-        elif event.buttons() & Qt.MouseButton.LeftButton:
-            canvasInverseTransform = self._transform.inverted()[0]
-            self._lastMousePos = canvasInverseTransform.map(event.pos())
+        if not self.panToolMousePress(event):
+            self._toolsToolBar.getCurrentTool().mousePress(event, self._transform, self._project)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if self.panToolMouseMove(event):
-            return
-
-        elif self._lastMousePos is not None:
-            canvasInverseTransform = self._transform.inverted()[0]
-            currentMousePos = canvasInverseTransform.map(event.pos())
-            delta = currentMousePos - self._lastMousePos
-            self._lastMousePos = currentMousePos
-
-            for layer in self._project.iterLayersBackToFront():
-                if layer.isSelected:
-                    layer.location += delta
-
-            self.repaintCache()
-            self.update()
+        if not self.panToolMouseMove(event):
+            self._toolsToolBar.getCurrentTool().mouseMove(event, self._transform, self._project)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        self.panToolMouseRelease(event)
+        if not self.panToolMouseRelease(event):
+            self._toolsToolBar.getCurrentTool().mouseRelease(event, self._transform, self._project)
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         if event.modifiers() & Qt.KeyboardModifier.AltModifier:

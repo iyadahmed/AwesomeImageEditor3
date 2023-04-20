@@ -12,10 +12,9 @@ class LayerOperationsToolBar(ToolBar):
         super().__init__("Layer Operations", parent)
         self._project = project
 
-        self.setIconSize(QSize(24, 24))
-        ICON_DELETE = self.getTintedIcon("layers/delete_btn.svg")
-        ICON_LOWER = self.getTintedIcon("layers/lower_layer_onestep.svg")
-        ICON_RAISE = self.getTintedIcon("layers/raise_layer_onestep.svg")
+        ICON_DELETE = getIcon("layers/delete_btn.svg")
+        ICON_LOWER = getIcon("layers/lower_layer_onestep.svg")
+        ICON_RAISE = getIcon("layers/raise_layer_onestep.svg")
 
         self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         self.addAction(ICON_LOWER, "Lower", self.onIconLowerPress)

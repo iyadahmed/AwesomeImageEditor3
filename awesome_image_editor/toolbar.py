@@ -5,7 +5,6 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QToolBar, QWidget, QProxyStyle, QStyle, QStyleOption
 
 from awesome_image_editor.icons import getIcon, getFullIconPath
-from awesome_image_editor.pixmap_utils import getTintedPixmap
 
 ICON_TOOLBAR_EXTENSION_HORIZONTAL_RTL = getIcon("toolbar/extension_horizontal_rtl.svg")
 ICON_TOOLBAR_EXTENSION_HORIZONTAL = getIcon("toolbar/extension_horizontal.svg")
@@ -48,18 +47,3 @@ class ToolBar(QToolBar):
             # https://bugreports.qt.io/browse/QTBUG-64527?attachmentSortBy=dateTime
             "QToolBarExtension {padding: 0px;}"
         )
-
-    def getTintedIcon(self, path: str):
-        """Get a QIcon with a pixmap tinted with highlighted text color for normal and active modes of "On" icon state,
-        via its relative path to the "icons" directory
-        """
-        icon = getIcon(path)
-        # TODO: it would have been better if we could override QStyle instead,
-        #       but I couldn't find a way to paint over pixmap for a specific button state,
-        #       I was able however to paint over it regardless of state, but not for a specific state,
-        #       by subclassing QProxyStyle, passing parent style or "Fusion" to constructor
-        #       and overriding drawItemPixmap.
-        tintedPixmap = getTintedPixmap(icon.pixmap(self.iconSize()), self.palette().highlightedText())
-        icon.addPixmap(tintedPixmap, QIcon.Mode.Normal, QIcon.State.On)
-        icon.addPixmap(tintedPixmap, QIcon.Mode.Active, QIcon.State.On)
-        return icon
