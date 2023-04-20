@@ -37,11 +37,11 @@ class LayerOperationsToolBar(ToolBar):
 class LayersWidget(QWidget):
     def __init__(self, parent: QWidget, project: ProjectModel):
         super().__init__(parent)
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        titleLayout = QHBoxLayout(self)
+        titleLayout = QHBoxLayout()
         titleLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         titleIconLabel = QLabel(self)
         titleIconLabel.setPixmap(getIcon("layers/layers_dialog.svg").pixmap(QSize(24, 24)))

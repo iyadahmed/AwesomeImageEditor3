@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.project = ProjectModel(self, QSize(1920, 1080))
 
         centralWidget = QWidget(self)
-        centralWidgetLayout = QHBoxLayout(centralWidget)
+        centralWidgetLayout = QHBoxLayout()
         centralWidget.setContentsMargins(0, 0, 0, 0)
         centralWidget.setLayout(centralWidgetLayout)
         self.setCentralWidget(centralWidget)
